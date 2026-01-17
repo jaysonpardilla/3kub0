@@ -2,7 +2,6 @@ from PIL import Image
 import io
 from django.core.files.base import ContentFile
 import numpy as np
-import cv2
 
 
 def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
@@ -12,6 +11,8 @@ def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
     This function performs a lazy import of rembg to avoid importing heavy
     native libraries (onnxruntime) at Django startup.
     """
+    import cv2
+    
     # Attempt rembg first (lazy import)
     try:
         from rembg import remove

@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libmariadb-dev \
     libgl1 \
+    libgthread0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
