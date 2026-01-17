@@ -26,11 +26,16 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p staticfiles
 
-# Set working directory to core
-WORKDIR /app/core
+# Keep working directory at /app (where manage.py is copied)
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Expose port
 EXPOSE 8000
 
-# Start the application - run from core directory where manage.py is
-CMD python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application
+# Start the application - use exec form and explicit paths
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["cd core && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"]
