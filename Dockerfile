@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y \
     libmariadb-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements from core directory
-COPY core/requirements.txt ./requirements.txt
+# Copy production requirements only
+COPY core/requirements-prod.txt ./requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
