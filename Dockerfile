@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Build cache invalidation - forces rebuild
-ARG BUILD_DATE=2026-01-18-force-refresh
+ARG BUILD_DATE=2026-01-18-twisted-iocpsupport-removed-v2
 
 # Simplified build - using Python packages for database connectivity
 WORKDIR /app
