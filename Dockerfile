@@ -1,5 +1,6 @@
 FROM python:3.12-slim
 
+# Updated: Using MariaDB packages instead of deprecated MySQL packages
 WORKDIR /app
 
 # Install system dependencies required for MySQL
