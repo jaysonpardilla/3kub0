@@ -14,14 +14,20 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy project files (including static files)
 COPY . .
 
-# Create staticfiles directory
-RUN mkdir -p /app/staticfiles
+# Ensure required directories exist
+RUN mkdir -p /app/staticfiles /app/core
+
+# List static files to verify they were copied
+RUN ls -la /app/core/static/ 2>&1 || echo "Warning: static directory not found"
 
 # Collect static files during build
-RUN python manage.py collectstatic --noinput --clear --verbosity 2 2>&1 || true
+RUN python manage.py collectstatic --noinput --clear --verbosity 2
+
+# Verify staticfiles were created
+RUN ls -la /app/staticfiles/ 2>&1 || echo "Warning: staticfiles directory is empty"
 
 # Expose port
 EXPOSE 8000
@@ -31,4 +37,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()"
 
 # Start server with migrations
-CMD sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput 2>&1 && exec daphne -b 0.0.0.0 -p 8000 core.asgi:application'
+CMD sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput --verbosity 1 && exec daphne -b 0.0.0.0 -p 8000 core.asgi:application'
