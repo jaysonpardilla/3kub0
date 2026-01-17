@@ -6,12 +6,16 @@ ARG BUILD_DATE=2026-01-18-force-refresh
 # Simplified build - using Python packages for database connectivity
 WORKDIR /app
 
-# Install only essential build dependencies
+# Install build dependencies AND OpenCV runtime libraries
 RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
     pkg-config \
     libmariadb-dev \
+    libgl1 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy production requirements only
