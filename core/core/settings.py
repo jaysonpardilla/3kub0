@@ -182,5 +182,5 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://localhost:3000,https://127.0.0.1,https://*.up.railway.app,https://3kub0-production.up.railway.app').split(',')
 
 # reCAPTCHA Configuration
-RECAPTCHA_SITE_KEY = os.getenv('RECAPTCHA_SITE_KEY', '6LfndgYrAAAAAOd-vW2OcR9RZqWq-lbX-qKnN0_F')
-RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY', '6LfndgYrAAAAAKfMxiRbV0BI0pqvEHHkqyWRYRKO')
+RECAPTCHA_SITE_KEY = os.getenv('RECAPTCHA_SITE_KEY', '6LctDE4sAAAAAACOi6w2-U_CGq5Kwc0VrCp4YhDa')
+RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY', '6LctDE4sAAAAAP20J05PvZvBdV8OefVNrOq3HVQR')
