@@ -21,6 +21,7 @@ celery==5.3.4
 
 # Image Processing & Storage
 Pillow==10.2.0
+opencv-python==4.8.1.78
 cloudinary==1.36.0
 django-cloudinary-storage==0.3.0
 
