@@ -132,16 +132,24 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Cloudinary Configuration
-import cloudinary
-cloudinary.config(
-    cloud_name='deyrmzn1x',
-    api_key='786333672776349',
-    api_secret='KyDW-AJ0wTkcVkcWPrqd_LLRlPg'
-)
+# Cloudinary Configuration - Configure Django storage backend
+# django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'deyrmzn1x'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY', '786333672776349'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'KyDW-AJ0wTkcVkcWPrqd_LLRlPg'),
+}
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
+
+# Also configure cloudinary SDK for direct cloudinary library usage
+import cloudinary
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
