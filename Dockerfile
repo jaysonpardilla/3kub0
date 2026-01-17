@@ -32,5 +32,5 @@ WORKDIR /app/core
 # Expose port
 EXPOSE 8000
 
-# Start the application
-CMD ["sh", "-c", "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"]
+# Start the application - run from core directory where manage.py is
+CMD python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application
