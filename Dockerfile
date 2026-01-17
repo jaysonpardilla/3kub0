@@ -1,14 +1,12 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
-# Updated: Using MariaDB packages instead of deprecated MySQL packages
+# Simplified build - let mysqlclient Python package handle connections
 WORKDIR /app
 
-# Install system dependencies required for MySQL/MariaDB
+# Install only essential build dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
-    default-mysql-client \
     build-essential \
-    default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements from core directory
