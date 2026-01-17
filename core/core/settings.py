@@ -128,9 +128,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Ensure staticfiles directory exists
+if not os.path.exists(STATIC_ROOT):
+    os.makedirs(STATIC_ROOT, exist_ok=True)
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Use default storage - WhiteNoise middleware will handle serving
+# Don't use CompressedManifestStaticFilesStorage as it requires manifest file
 
 # Cloudinary Configuration - Configure Django storage backend
 # django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
