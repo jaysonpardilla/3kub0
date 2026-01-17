@@ -57,7 +57,6 @@ virtualEnvironment/
 
 # Docker
 .dockerignore
-Dockerfile
 
 # Node (if any frontend)
 node_modules/
