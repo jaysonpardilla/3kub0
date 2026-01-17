@@ -23,10 +23,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy entire project
 COPY . .
 
+# Copy and make startup script executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Create necessary directories
 RUN mkdir -p staticfiles
 
-# Keep working directory at /app (where manage.py is copied)
+# Keep working directory at /app
 WORKDIR /app
 
 # Set environment variables
@@ -36,6 +40,5 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Expose port
 EXPOSE 8000
 
-# Start the application - use exec form and explicit paths
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["cd core && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"]
+# Use the startup script
+CMD ["/app/entrypoint.sh"]
