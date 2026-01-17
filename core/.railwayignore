@@ -1,0 +1,17 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+*.sqlite3
+.venv
+venv
+virtualEnvironment
+node_modules
+.env
+.env.local
+*.log
+.DS_Store
+captured_images/
+media/
