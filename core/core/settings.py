@@ -166,6 +166,11 @@ if not DEBUG:
     SECURE_CONTENT_SECURITY_POLICY = {
         'default-src': ("'self'", 'https:'),
     }
+    # CSRF trusted origins for Railway production deployment
+    CSRF_TRUSTED_ORIGINS = [
+        'https://*.up.railway.app',
+        'https://3kub0-production.up.railway.app',
+    ]
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
