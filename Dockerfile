@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+# Build cache invalidation - forces rebuild
+ARG BUILD_DATE=2026-01-18-force-refresh
+
 # Simplified build - using Python packages for database connectivity
 WORKDIR /app
 
