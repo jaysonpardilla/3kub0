@@ -46,6 +46,19 @@ try:
 except Exception as e:
     print(f"Migration error: {e}")
 
+# Collect static files
+print("\n=== Collecting Static Files ===")
+try:
+    result = subprocess.run([sys.executable, 'manage.py', 'collectstatic', '--noinput'], 
+                          capture_output=True, text=True)
+    print(result.stdout)
+    if result.stderr:
+        print(f"STDERR: {result.stderr}")
+    if result.returncode != 0:
+        print(f"Collectstatic failed with return code {result.returncode}")
+except Exception as e:
+    print(f"Collectstatic error: {e}")
+
 # Try to start Daphne
 print("\n=== Starting Daphne ===")
 try:
