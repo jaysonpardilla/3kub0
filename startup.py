@@ -1,35 +1,60 @@
 #!/usr/bin/env python
-"""
-Startup script that handles migrations and starts Daphne server.
-Uses os.execvp to replace the process (proper signal handling).
-"""
-import os
+"""Minimal startup to test if container can run Python at all"""
 import sys
+import subprocess
+import os
 
-# Set up Django path and environment
-os.chdir('/app/core')
-sys.path.insert(0, '/app/core')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+print("=== DEBUG: Python Startup Script Started ===")
+print(f"Python version: {sys.version}")
+print(f"Current working directory: {os.getcwd()}")
+print(f"Python executable: {sys.executable}")
 
-# Setup Django
-import django
-django.setup()
-
-# Run migrations
+# Try to change directory
 try:
-    from django.core.management import call_command
-    print("Running migrations...")
-    call_command('migrate', verbosity=1)
-    print("Migrations completed successfully!")
+    os.chdir('/app/core')
+    print(f"Changed to: {os.getcwd()}")
 except Exception as e:
-    print(f"Warning: Migration error: {e}")
-    print("Continuing with server startup...")
+    print(f"ERROR changing directory: {e}")
+    sys.exit(1)
 
-# Start Daphne (this replaces the current process)
-print("Starting Daphne server...")
-os.execvp('daphne', [
-    'daphne',
-    '-b', '0.0.0.0',
-    '-p', '8000',
-    'core.asgi:application'
-])
+# Check if manage.py exists
+if os.path.exists('manage.py'):
+    print("✓ manage.py found")
+else:
+    print("✗ manage.py NOT found - listing /app/core:")
+    os.system('ls -la /app/core')
+    sys.exit(1)
+
+# Check if we can import Django
+try:
+    import django
+    print(f"✓ Django {django.get_version()} imported")
+except Exception as e:
+    print(f"✗ Django import failed: {e}")
+    sys.exit(1)
+
+# Try to run migrations
+print("\n=== Running Migrations ===")
+try:
+    result = subprocess.run([sys.executable, 'manage.py', 'migrate'], 
+                          capture_output=True, text=True)
+    print(result.stdout)
+    if result.stderr:
+        print(f"STDERR: {result.stderr}")
+    if result.returncode != 0:
+        print(f"Migration failed with return code {result.returncode}")
+except Exception as e:
+    print(f"Migration error: {e}")
+
+# Try to start Daphne
+print("\n=== Starting Daphne ===")
+try:
+    subprocess.call([
+        sys.executable, '-m', 'daphne',
+        '-b', '0.0.0.0',
+        '-p', '8000',
+        'core.asgi:application'
+    ])
+except Exception as e:
+    print(f"ERROR starting Daphne: {e}")
+    sys.exit(1)
