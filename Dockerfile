@@ -5,9 +5,9 @@ WORKDIR /app
 # Install system dependencies required for MySQL
 RUN apt-get update && apt-get install -y \
     gcc \
-    mysql-client \
+    mariadb-client-compat \
     build-essential \
-    libmysqlclient-dev \
+    libmariadb-dev-compat \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements from core directory
