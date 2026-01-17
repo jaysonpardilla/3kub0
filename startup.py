@@ -33,6 +33,15 @@ except Exception as e:
     print(f"✗ Django import failed: {e}")
     sys.exit(1)
 
+# Create necessary directories
+print("\n=== Creating Directories ===")
+try:
+    os.makedirs('staticfiles', exist_ok=True)
+    os.makedirs('static', exist_ok=True)
+    print("✓ Created staticfiles and static directories")
+except Exception as e:
+    print(f"Warning: Could not create directories: {e}")
+
 # Try to run migrations
 print("\n=== Running Migrations ===")
 try:
