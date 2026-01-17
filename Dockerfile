@@ -23,22 +23,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy entire project
 COPY . .
 
-# Copy and make startup script executable
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
 # Create necessary directories
 RUN mkdir -p staticfiles
 
-# Keep working directory at /app
-WORKDIR /app
+# Set working directory to Django app directory where manage.py is
+WORKDIR /app/core
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=8000
 
 # Expose port
 EXPOSE 8000
 
-# Use the startup script
-CMD ["/app/entrypoint.sh"]
+# Use exec form to avoid shell issues - run migrations and start server
+CMD ["sh", "-c", "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"]
