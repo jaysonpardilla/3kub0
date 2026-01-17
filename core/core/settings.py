@@ -8,9 +8,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-d!328^d((@e2_61s13s3q9=1w!g#^u5s9sk4wyjs_418#-05=t')
 
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,*.up.railway.app').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,*.up.railway.app,3kub0-production.up.railway.app').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -166,12 +166,10 @@ if not DEBUG:
     SECURE_CONTENT_SECURITY_POLICY = {
         'default-src': ("'self'", 'https:'),
     }
-    # CSRF trusted origins for Railway production deployment
-    CSRF_TRUSTED_ORIGINS = [
-        'https://*.up.railway.app',
-        'https://3kub0-production.up.railway.app',
-    ]
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins for production
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://localhost:3000,https://127.0.0.1,https://*.up.railway.app,https://3kub0-production.up.railway.app').split(',')
