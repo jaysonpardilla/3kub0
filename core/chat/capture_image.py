@@ -1,9 +1,12 @@
 # capture_image.py
 
-import cv2
 import os
 
 def capture_image(filename='intruder.jpg'):
+    # Import cv2 only when function is called (lazy import)
+    # This allows Django to start without OpenCV if this function isn't used
+    import cv2
+    
     # Open the webcam
     cam = cv2.VideoCapture(0)
     ret, frame = cam.read()
