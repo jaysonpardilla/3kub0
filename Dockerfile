@@ -3,12 +3,12 @@ FROM python:3.12-slim
 # Updated: Using MariaDB packages instead of deprecated MySQL packages
 WORKDIR /app
 
-# Install system dependencies required for MySQL
+# Install system dependencies required for MySQL/MariaDB
 RUN apt-get update && apt-get install -y \
     gcc \
-    mariadb-client-compat \
+    default-mysql-client \
     build-essential \
-    libmariadb-dev-compat \
+    default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements from core directory
