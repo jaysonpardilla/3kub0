@@ -44,7 +44,7 @@ def signup(request):
         recaptcha_response = request.POST.get("g-recaptcha-response")
 
         data = {
-            "secret": "6LfndgYrAAAAAKfMxiRbV0BI0pqvEHHkqyWRYRKO",
+            "secret": settings.RECAPTCHA_SECRET_KEY,
             "response": recaptcha_response
         }
         google_url = "https://www.google.com/recaptcha/api/siteverify"
@@ -78,7 +78,10 @@ def signup(request):
         messages.success(request, "Account created successfully. Please log in.")
         return redirect(reverse('chat:login'))
     
-    return render(request, 'chat/temp-signup.html')
+    context = {
+        'recaptcha_site_key': settings.RECAPTCHA_SITE_KEY
+    }
+    return render(request, 'chat/temp-signup.html', context)
 
 FAILED_ATTEMPTS = {}
 def login_view(request):
