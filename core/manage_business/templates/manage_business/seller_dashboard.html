@@ -101,10 +101,7 @@
 {% if messages %}
     <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 400px; padding: 0 1rem;">
       {% for message in messages %}
-        <div class="toast show align-items-center text-white 
-          {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} 
-          border-0 mx-auto" role="alert" aria-live="assertive" aria-atomic="true"
-          style="font-family: 'Arial', sans-serif;">
+        <div class="toast show align-items-center text-white {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} border-0 mx-auto" role="alert" aria-live="assertive" aria-atomic="true" style="font-family: 'Arial', sans-serif;">
           <div class="d-flex">
             <div class="toast-body text-center w-100">
               {{ message }}
