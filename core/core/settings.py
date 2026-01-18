@@ -67,18 +67,29 @@ WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
 # Redis configuration for WebSocket support
-REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+REDIS_URL = os.getenv('REDIS_URL', '')
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [REDIS_URL],
-            'capacity': 3000,
-            'expiry': 10,
+# Configure Django Channels layer
+if REDIS_URL:
+    # Use Redis channel layer if REDIS_URL is available
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+                'capacity': 3000,
+                'expiry': 10,
+            },
         },
-    },
-}
+    }
+else:
+    # Fallback to in-memory channel layer (works but single-process only)
+    # This is useful for development and testing
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
+    }
 
 
 DATABASES = {
@@ -189,7 +200,7 @@ SECURE_CONTENT_SECURITY_POLICY = {
     'style-src': ("'self'", "'unsafe-inline'"),
     'font-src': ("'self'",),
     'img-src': ("'self'", 'data:', 'https:'),
-    'connect-src': ("'self'",),
+    'connect-src': ("'self'", 'ws:', 'wss:'),  # Allow WebSocket connections
 }
 
 # CORS Settings

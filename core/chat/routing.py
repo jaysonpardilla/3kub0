@@ -1,8 +1,8 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import consumers
 
-# Fix: Change the URL pattern to accept a UUID instead of an integer.
-# This matches the UUID primary key used in your CustomUser model.
+# WebSocket URL routing for Django Channels
+# Handles chat WebSocket connections
 websocket_urlpatterns = [
     path('ws/chat/<uuid:user_id>/', consumers.ChatConsumer.as_asgi()),
 ]

@@ -40,8 +40,8 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()" || exit 1
 
-# Start Daphne with WhiteNoise serving static files
-CMD exec daphne -b 0.0.0.0 -p 8000 core.asgi:application
+# Start Daphne with WebSocket support enabled
+CMD exec daphne -b 0.0.0.0 -p 8000 --ws-per-message-deflate --ws-max-size 524288 core.asgi:application
 
 
 
