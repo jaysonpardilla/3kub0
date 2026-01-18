@@ -76,19 +76,14 @@ print('='*80)
 for kind, owner, public_id in targets:
     if not public_id:
         continue
-    # Normalize public_id: if stored value contains full Cloudinary URL, extract the last upload segment
-    cleaned_public_id = public_id.split('/image/upload/')[-1] if '/image/upload/' in public_id else public_id
-    print(f"\nProcessing {kind} ({owner}): {public_id} -> cleaned: {cleaned_public_id}")
-    if resource_exists(cleaned_public_id):
+    print(f"\nProcessing {kind} ({owner}): {public_id}")
+    if resource_exists(public_id):
         print('  Already exists on Cloudinary')
         continue
-    # Try local file using cleaned path first, then original
-    local_file = MEDIA_ROOT / cleaned_public_id
-    if not local_file.exists():
-        local_file = MEDIA_ROOT / public_id
+    local_file = MEDIA_ROOT / public_id
     if local_file.exists():
-        print(f'  Local file found: {local_file} — uploading as {cleaned_public_id}')
-        ok, res = upload_file(local_file, cleaned_public_id)
+        print(f'  Local file found: {local_file} — uploading')
+        ok, res = upload_file(local_file, public_id)
         print('  Uploaded' if ok else f'  Upload failed: {res}')
         continue
     # No local file — create placeholder image
@@ -110,7 +105,7 @@ for kind, owner, public_id in targets:
             d.text((10,140), text, fill=(50,50,50), font=font)
             img.save(placeholder_path)
         print(f'  Created placeholder at {placeholder_path}')
-        ok, res = upload_file(placeholder_path, cleaned_public_id)
+        ok, res = upload_file(placeholder_path, public_id)
         if ok:
             print('  Placeholder uploaded to Cloudinary ✅')
         else:
