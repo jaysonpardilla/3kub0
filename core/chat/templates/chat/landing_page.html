@@ -18,9 +18,13 @@
    {% if messages %}
    <div class="messages_notification" style="position: fixed; top: 20px; right: 40%; z-index: 1050; font-family: Arial, sans-serif;">
      {% for message in messages %}
-       <div class="toast show align-items-center text-white 
-           {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-info{% endif %} 
-           border-0" role="alert" aria-live="assertive" aria-atomic="true">
+       {% if message.tags == 'error' %}
+       <div class="toast show align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+       {% elif message.tags == 'success' %}
+       <div class="toast show align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+       {% else %}
+       <div class="toast show align-items-center text-white bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+       {% endif %}
          <div class="d-flex">
            <div class="toast-body">
              {{ message }}
