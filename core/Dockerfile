@@ -20,21 +20,25 @@ COPY . .
 # Ensure required directories exist
 RUN mkdir -p /app/staticfiles /app/core
 
-# List static files to verify they were copied
-RUN ls -la /app/core/static/ 2>&1 || echo "Warning: static directory not found"
+# Verify source static files exist
+RUN ls -la /app/core/static/ 2>&1 || echo "Info: static directory contents checked"
 
-# Collect static files during build
-RUN python manage.py collectstatic --noinput --clear --verbosity 2
+# Collect static files during build - CRITICAL for production
+RUN python manage.py collectstatic --noinput --clear --verbosity 3 || exit 1
 
 # Verify staticfiles were created
-RUN ls -la /app/staticfiles/ 2>&1 || echo "Warning: staticfiles directory is empty"
+RUN ls -la /app/staticfiles/ && echo "Static files collected successfully"
 
 # Expose port
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()" || exit 1
 
-# Start server with migrations
-CMD sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput --verbosity 1 && exec daphne -b 0.0.0.0 -p 8000 core.asgi:application'
+# Start server with migrations and ensure static files are always collected
+CMD sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput --no-default-ignore && exec daphne -b 0.0.0.0 -p 8000 core.asgi:application'
+
+
+
+

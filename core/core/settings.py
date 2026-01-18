@@ -137,8 +137,20 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Use default storage - WhiteNoise middleware will handle serving
-# Don't use CompressedManifestStaticFilesStorage as it requires manifest file
+# WhiteNoise configuration for efficient static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Enable MIME type detection for proper CSS/JS serving
+MIMETYPES = {
+    '.css': 'text/css',
+    '.js': 'application/javascript',
+    '.json': 'application/json',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.svg': 'image/svg+xml',
+}
 
 # Cloudinary Configuration - Configure Django storage backend
 # django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
@@ -179,7 +191,12 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_SECURITY_POLICY = {
-    'default-src': ("'self'", 'https:'),
+    'default-src': ("'self'",),
+    'script-src': ("'self'", "'unsafe-inline'"),
+    'style-src': ("'self'", "'unsafe-inline'"),
+    'font-src': ("'self'",),
+    'img-src': ("'self'", 'data:', 'https:'),
+    'connect-src': ("'self'",),
 }
 
 # CORS Settings
