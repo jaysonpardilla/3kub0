@@ -28,20 +28,26 @@ def profile_image_url(profile_obj):
             
             # If URL exists, ensure it's a full Cloudinary URL
             if url:
-                # Check if it's already a complete Cloudinary URL
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
+                # If it already contains the Cloudinary host, try to normalize/extract the public_id
+                if 'res.cloudinary.com' in url:
+                    # If it contains the image/upload segment, extract the public_id
+                    if '/image/upload/' in url:
+                        public_id = url.split('/image/upload/', 1)[1]
+                        from django.conf import settings
+                        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+                    # If it already starts with correct https URL, return it
+                    if url.startswith('https://res.cloudinary.com/'):
+                        return url
                 # Check if it's any other full URL
                 if url.startswith('http://') or url.startswith('https://'):
                     return url
                 
-                # If it's a relative path, construct the full Cloudinary URL
-                if url and not url.startswith('/'):
+                # If it's a relative path or public_id, construct the full Cloudinary URL
+                if url:
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
-                
-                return url
     except:
         pass
     

@@ -60,12 +60,18 @@ class Profile(models.Model):
     def profile_image_url(self):
         """Return the full Cloudinary URL for profile image or a fallback placeholder"""
         try:
-            if self.profile and self.profile.url:
+            if self.profile and getattr(self.profile, 'url', None):
                 url = self.profile.url
-                # If it's already a full Cloudinary URL (starts with https://res.cloudinary.com), return it
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-                # If it's a full URL from elsewhere, return it
+                # Normalize malformed stored values containing Cloudinary host
+                if 'res.cloudinary.com' in url:
+                    if '/image/upload/' in url:
+                        public_id = url.split('/image/upload/', 1)[1]
+                        from django.conf import settings
+                        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+                    if url.startswith('https://res.cloudinary.com/'):
+                        return url
+                # If it's already a full URL, return it
                 if url.startswith('http://') or url.startswith('https://'):
                     return url
                 # If it's a relative path (from Cloudinary storage), construct full URL
@@ -73,7 +79,7 @@ class Profile(models.Model):
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
-        except:
+        except Exception:
             pass
         # Return a placeholder avatar URL (using ui-avatars service)
         return f"https://ui-avatars.com/api/?name={self.user.username}&background=random&size=128"

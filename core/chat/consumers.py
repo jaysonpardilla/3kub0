@@ -111,18 +111,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         if profile_image:
                             url = profile_image.url
                             
-                            # If URL exists, ensure it's a full Cloudinary URL
+                            # If URL exists, normalize and ensure it's a full Cloudinary URL
                             if url:
-                                # Check if it's already a full URL
+                                # If it contains cloudinary host, try extracting public_id
+                                if 'res.cloudinary.com' in url:
+                                    if '/image/upload/' in url:
+                                        public_id = url.split('/image/upload/', 1)[1]
+                                        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                                        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+                                    if url.startswith('https://res.cloudinary.com/'):
+                                        return url
+                                # If it's any other full URL, return as-is
                                 if url.startswith('http://') or url.startswith('https://'):
                                     return url
-                                
-                                # If it's a relative path, construct the full Cloudinary URL
-                                if url and not url.startswith('/'):
+                                # Otherwise treat as public_id/relative path
+                                if url:
                                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
-                                
-                                return url
                 except Exception:
                     pass
                 
