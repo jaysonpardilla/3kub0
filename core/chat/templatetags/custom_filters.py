@@ -17,39 +17,26 @@ def in_wishlist(product, user):
 
 
 @register.filter
-def sanitize_image_url(url_string):
-    """Sanitize and fix malformed Cloudinary URLs."""
-    if not url_string:
-        return ""
-    
-    url = str(url_string).strip()
-    
-    # Fix missing slash in https:/
-    if url.startswith('https:/') and not url.startswith('https://'):
-        url = url.replace('https:/', 'https://', 1)
-    
-    # If already a full Cloudinary URL, return as-is
-    if url.startswith('https://res.cloudinary.com/'):
-        return url
-    
-    # If it's just a path, prepend the Cloudinary URL
-    if not url.startswith('http'):
-        from django.conf import settings
-        return f"{settings.MEDIA_URL}{url}"
-    
-    return url
-
-
-@register.filter
 def profile_image_url(profile_obj):
     try:
-        if profile_obj and profile_obj.profile and profile_obj.profile.url:
+        if profile_obj and profile_obj.profile:
             url = profile_obj.profile.url
-            # Use the sanitize filter logic
-            url = sanitize_image_url(url)
+            
+            # If URL exists, return it as-is
             if url:
+                # Check if it's already a full Cloudinary URL
+                if url.startswith('http://') or url.startswith('https://'):
+                    return url
+                
+                # If it's a relative path, construct the full Cloudinary URL
+                if not url.startswith('/'):
+                    # It's a public_id, construct full URL
+                    from django.conf import settings
+                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                
                 return url
-    except Exception as e:
+    except:
         pass
     
     # Return a placeholder avatar URL with user's initials/name

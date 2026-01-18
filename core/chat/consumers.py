@@ -100,20 +100,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Helper function to get profile URL or generate a fallback avatar
             def get_profile_url(user):
                 try:
+                    from django.conf import settings
                     profile = getattr(user, 'profile', None)
                     if profile:
                         profile_image = getattr(profile, 'profile', None)
                         if profile_image:
                             url = profile_image.url
-                            # Sanitize URL
-                            if url.startswith('https:/') and not url.startswith('https://'):
-                                url = url.replace('https:/', 'https://', 1)
-                            if url.startswith('https://res.cloudinary.com/'):
+                            
+                            # If URL exists, ensure it's a full URL
+                            if url:
+                                # Check if it's already a full Cloudinary URL
+                                if url.startswith('http://') or url.startswith('https://'):
+                                    return url
+                                
+                                # If it's a relative path, construct the full Cloudinary URL
+                                if not url.startswith('/'):
+                                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+                                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                                
                                 return url
-                            if not url.startswith('http'):
-                                from django.conf import settings
-                                return f"{settings.MEDIA_URL}{url}"
-                            return url
                 except Exception:
                     pass
                 # Fallback: generate avatar using user's name from ui-avatars.com
