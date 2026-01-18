@@ -137,10 +137,13 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# WhiteNoise will serve static files via middleware
-# Use Django's default static files storage
-# WhiteNoise middleware handles serving and compression
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# Use WhiteNoise storage for compression and efficient serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Configure WhiteNoise compression
+WHITENOISE_AUTOREFRESH = False
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_SKIP_COMPRESSION_FILETYPES = ('jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz')
 
 # Cloudinary Configuration - Configure Django storage backend
 # django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict

@@ -17,14 +17,21 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files (including static files)
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p /app/staticfiles
+# Pre-create staticfiles directory with proper permissions
+RUN mkdir -p /app/staticfiles && chmod 755 /app/staticfiles
 
-# Collect static files - Critical for WhiteNoise
+# Run migrations first
+RUN echo "Running migrations..." && \
+    python manage.py migrate --noinput || echo "Warning: Migrations had issues, continuing..."
+
+# Collect static files BEFORE starting server - this is CRITICAL
 RUN echo "Collecting static files..." && \
-    python manage.py collectstatic --noinput --clear --verbosity 2 && \
-    echo "Static files collection complete" && \
-    find /app/staticfiles -type f | head -20
+    python manage.py collectstatic --noinput --clear --verbosity 3 && \
+    echo "Static file collection complete" && \
+    echo "Listing staticfiles directory:" && \
+    find /app/staticfiles -type f -name "*.css" -o -name "*.js" | head -20 && \
+    echo "Total files in staticfiles:" && \
+    find /app/staticfiles -type f | wc -l
 
 # Expose port
 EXPOSE 8000
@@ -33,13 +40,8 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()" || exit 1
 
-# Run migrations and start Daphne with WhiteNoise
-CMD sh -c 'echo "Starting Django app..." && \
-    python manage.py migrate --noinput && \
-    echo "Collecting static files at startup..." && \
-    python manage.py collectstatic --noinput && \
-    echo "Starting Daphne server..." && \
-    exec daphne -b 0.0.0.0 -p 8000 core.asgi:application'
+# Start Daphne with WhiteNoise serving static files
+CMD exec daphne -b 0.0.0.0 -p 8000 core.asgi:application
 
 
 
