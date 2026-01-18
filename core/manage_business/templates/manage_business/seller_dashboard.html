@@ -1,13 +1,16 @@
-{% extends 'chat/base.html' %}
 {% load static %}
-{% block title %}
-   <title>E-Kubo: Dashboard</title>
-{% endblock title %}
-<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
-<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
-<link rel="stylesheet" href="{% static 'css/messages.css' %}">
-{% block content %}
-<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Kubo: Dashboard</title>
+    <link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/messages.css' %}">
+    <style>
    @media (max-width: 768px) {
       .row {
          flex-direction: column;
@@ -95,7 +98,22 @@
          font-size: 12px;
       }
    }
-</style>
+   /* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
+   .fade-out td, .fade-out th {
+      transition: opacity 0.6s ease, padding 0.6s ease;
+      opacity: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+   }
+   .fade-out {
+      transition: height 0.6s ease, margin 0.6s ease;
+      height: 0 !important;
+      margin: 0 !important;
+   }
+    </style>
+</head>
+<body>
+    {% include 'chat/navbar.html' %}
 
 
 {% if messages %}
@@ -268,20 +286,6 @@
    </div>
 </div>
 
-<style>
-/* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
-.fade-out td, .fade-out th {
-   transition: opacity 0.6s ease, padding 0.6s ease;
-   opacity: 0 !important;
-   padding-top: 0 !important;
-   padding-bottom: 0 !important;
-}
-.fade-out {
-   transition: height 0.6s ease, margin 0.6s ease;
-   height: 0 !important;
-   margin: 0 !important;
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -392,4 +396,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <script src="{% static 'js/slideup.js' %}"></script>
 <script src="{% static 'js/messages.js' %}"></script>
-{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
