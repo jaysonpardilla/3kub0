@@ -41,7 +41,7 @@ class Message(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    profile = models.ImageField(upload_to='user_profiles', default='default.png')
+    profile = models.ImageField(upload_to='user_profiles', blank=True, null=True)  # Remove default to avoid 404 errors
     province = models.CharField(max_length=100, null=True, blank=True)
     municipality = models.CharField(max_length=100, null=True, blank=True)
     street = models.CharField(max_length=200,  null=True, blank=True)
@@ -58,10 +58,14 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.street if self.street else 'No Address'}"
     
     def profile_image_url(self):
-        try: 
-            url = self.profile.url
+        """Return the profile image URL or a fallback placeholder"""
+        try:
+            if self.profile and self.profile.url:
+                return self.profile.url
         except:
-            url = ''
+            pass
+        # Return a placeholder avatar URL (using DUI service)
+        return f"https://ui-avatars.com/api/?name={self.user.username}&background=random&size=128"
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_profile(sender, instance, created, **kwargs):

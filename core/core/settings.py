@@ -162,17 +162,23 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'deyrmzn1x'),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY', '786333672776349'),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'KyDW-AJ0wTkcVkcWPrqd_LLRlPg'),
+    'FOLDER': 'ekubo/media',  # Organize uploads in a folder
+    'SECURE': True,  # Use secure HTTPS URLs
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-MEDIA_URL = '/media/'
+
+# Cloudinary URL configuration - generates proper Cloudinary URLs
+# Format: https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}
+MEDIA_URL = f"https://res.cloudinary.com/{CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/"
 
 # Also configure cloudinary SDK for direct cloudinary library usage
 import cloudinary
 cloudinary.config(
     cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
     api_key=CLOUDINARY_STORAGE['API_KEY'],
-    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+    api_secret=CLOUDINARY_STORAGE['API_SECRET'],
+    secure=True,
 )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
