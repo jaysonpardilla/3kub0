@@ -52,6 +52,11 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
+            # Make custom template tags/filters available globally so templates
+            # don't need `{% load custom_filters %}` on every page.
+            'builtins': [
+                'chat.templatetags.custom_filters',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

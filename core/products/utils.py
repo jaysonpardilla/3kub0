@@ -67,57 +67,57 @@ def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
             return None
 
 
-    def build_cloudinary_url(public_id_or_url, cloud_name=None):
-        """Return a full Cloudinary URL including an extension when possible.
+def build_cloudinary_url(public_id_or_url, cloud_name=None):
+    """Return a full Cloudinary URL including an extension when possible.
 
-        - If `public_id_or_url` is already a full URL, return it unchanged.
-        - If it contains '/image/upload/', assume it's a Cloudinary path and try
-          to append the correct extension using the admin API; default to png.
-        - Otherwise treat it as a public_id and attempt to detect format via
-          `cloudinary.api.resource`. Falls back to `.png` when detection fails.
-        """
-        try:
-            if not public_id_or_url:
-                return ''
-            s = str(public_id_or_url)
-            if s.startswith('http://') or s.startswith('https://'):
-                return s
+    This helper is used across templates/model methods.
 
-            # Normalize: drop leading slashes
-            s = s.lstrip('/')
-
-            # If already contains upload path, take the part after it
-            if '/image/upload/' in s:
-                public_part = s.split('/image/upload/')[-1]
-            else:
-                public_part = s
-
-            # Determine cloud name
-            if not cloud_name:
-                from django.conf import settings
-                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
-
-            # If public_part already has an extension, split it cleanly
-            if '.' in public_part and len(public_part.rsplit('.', 1)[-1]) <= 4:
-                base, ext = public_part.rsplit('.', 1)
-                public_id = base
-                fmt = ext
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{fmt}"
-
-            # No obvious extension — ask Cloudinary for metadata (resource expects public_id without extension)
-            public_id = public_part
-            fmt = None
-            try:
-                import cloudinary.api as _api
-                info = _api.resource(public_id)
-                fmt = info.get('format')
-            except Exception:
-                fmt = None
-
-            if fmt:
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{fmt}"
-            else:
-                # Fallback to png extension if unknown
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.png"
-        except Exception:
+    - If `public_id_or_url` is already a full URL, return it unchanged.
+    - If it contains `/image/upload/`, extract the part after it.
+    - Otherwise treat it as a Cloudinary public_id.
+    - If no extension is present, try to detect it via `cloudinary.api.resource`.
+      Fall back to `.png` when detection fails.
+    """
+    try:
+        if not public_id_or_url:
             return ''
+
+        s = str(public_id_or_url).strip()
+
+        # Already a full URL (Cloudinary or otherwise)
+        if s.startswith('http://') or s.startswith('https://'):
+            return s
+
+        # Normalize: drop leading slashes
+        s = s.lstrip('/')
+
+        # If already contains upload path, take the part after it
+        public_part = s.split('/image/upload/')[-1] if '/image/upload/' in s else s
+
+        # Determine cloud name
+        if not cloud_name:
+            from django.conf import settings
+            cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+
+        # If public_part already has an extension, split it cleanly
+        if '.' in public_part and len(public_part.rsplit('.', 1)[-1]) <= 4:
+            base, ext = public_part.rsplit('.', 1)
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{base}.{ext}"
+
+        # No obvious extension — ask Cloudinary for metadata
+        public_id = public_part
+        fmt = None
+        try:
+            import cloudinary.api as _api
+            info = _api.resource(public_id)
+            fmt = info.get('format')
+        except Exception:
+            fmt = None
+
+        if fmt:
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{fmt}"
+
+        # Fallback to png extension if unknown
+        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.png"
+    except Exception:
+        return ''
