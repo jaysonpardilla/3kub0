@@ -6,12 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageForm = document.querySelector('.message-form');
     const messageTextarea = document.querySelector('textarea[name="content"]');
     
-    // Get user names from hidden inputs
-    const senderFirstName = document.getElementById('sender-first-name')?.value || 'Sender';
-    const senderLastName = document.getElementById('sender-last-name')?.value || '';
-    const receiverFirstName = document.getElementById('receiver-first-name')?.value || 'Receiver';
-    const receiverLastName = document.getElementById('receiver-last-name')?.value || '';
-    
     // Real-time sidebar search
     const searchInput = document.querySelector('input[name="search_user"]');
     if (searchInput) {
@@ -51,22 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get profile images from hidden inputs (may be empty)
     const senderProfileImage = document.getElementById('sender-profile-image').value || '';
     const receiverProfileImage = document.getElementById('receiver-profile-image').value || '';
-
-    // Function to generate a fallback avatar URL with initials
-    function getFallbackAvatarUrl(firstName, lastName) {
-        const first = (firstName || '').substring(0, 1).toUpperCase();
-        const last = (lastName || '').substring(0, 1).toUpperCase();
-        const initials = (first + last).substring(0, 2) || 'U';
-        return `https://ui-avatars.com/api/?name=${initials}&background=random&size=128`;
-    }
-
-    // Ensure we have valid image URLs, fallback to initials if empty
-    function getProfileImageUrl(imageUrl, firstName, lastName) {
-        if (!imageUrl || imageUrl.trim() === '') {
-            return getFallbackAvatarUrl(firstName, lastName);
-        }
-        return imageUrl;
-    }
 
     // Function to scroll to bottom instantly (no animation)
     function scrollToBottom() {
@@ -143,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to display a message in the chat window
-    function displayMessage(messageText, senderId, isCurrentUser, timestamp, senderFirstName = 'Sender', senderLastName = '', receiverFirstName = 'Receiver', receiverLastName = '') {
+    function displayMessage(messageText, senderId, isCurrentUser, timestamp) {
         if (!chatContainer) return;
 
         const messageDiv = document.createElement('div');
@@ -172,22 +150,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const img = document.createElement('img');
-        const imgUrl = isCurrentUser 
-            ? getProfileImageUrl(senderProfileImage, senderFirstName, senderLastName)
-            : getProfileImageUrl(receiverProfileImage, receiverFirstName, receiverLastName);
-        img.src = imgUrl;
+        const profileUrl = isCurrentUser ? senderProfileImage : receiverProfileImage;
+        img.src = profileUrl;
         img.alt = 'Profile Picture';
         img.style.borderRadius = '50%';
         img.style.width = '40px';
         img.style.height = '40px';
-        
-        // Add error handler to fallback if image fails to load
+        img.style.objectFit = 'cover';
+
+        // Handle image load errors with fallback initials
         img.onerror = function() {
-            if (isCurrentUser) {
-                this.src = getFallbackAvatarUrl(senderFirstName, senderLastName);
-            } else {
-                this.src = getFallbackAvatarUrl(receiverFirstName, receiverLastName);
+            // Generate initials from the profile URL if it's a ui-avatars URL
+            let initials = 'U';
+            
+            if (profileUrl && profileUrl.includes('ui-avatars.com')) {
+                // Extract name parameter from ui-avatars URL
+                const nameMatch = profileUrl.match(/name=([^&]+)/);
+                if (nameMatch) {
+                    const name = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
+                    const parts = name.split(' ').filter(part => part.length > 0);
+                    if (parts.length > 0) {
+                        initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
+                    }
+                }
             }
+
+            // Replace img with a styled div showing initials
+            const initialDiv = document.createElement('div');
+            initialDiv.className = 'profile-initial';
+            initialDiv.textContent = initials;
+            initialDiv.style.width = '40px';
+            initialDiv.style.height = '40px';
+            initialDiv.style.borderRadius = '50%';
+            initialDiv.style.display = 'flex';
+            initialDiv.style.alignItems = 'center';
+            initialDiv.style.justifyContent = 'center';
+            initialDiv.style.backgroundColor = '#e0e0e0';
+            initialDiv.style.color = '#333';
+            initialDiv.style.fontWeight = 'bold';
+            initialDiv.style.fontSize = '14px';
+            initialDiv.style.minWidth = '40px';
+            initialDiv.style.minHeight = '40px';
+
+            img.replaceWith(initialDiv);
         };
 
         const span = document.createElement('span');
@@ -272,13 +277,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const img = document.createElement('img');
         img.setAttribute('width', '50');
         img.setAttribute('height', '50');
-        const profileUrl = user.profile_url || getProfileImageUrl('', user.first_name, user.last_name);
-        img.setAttribute('src', profileUrl);
+        img.setAttribute('src', user.profile_url || '');
         img.setAttribute('alt', 'Profile Picture');
-        
-        // Add error handler to fallback if image fails to load
+        img.style.borderRadius = '50%';
+        img.style.objectFit = 'cover';
+
+        // Handle image load errors with fallback initials
         img.onerror = function() {
-            this.src = getFallbackAvatarUrl(user.first_name, user.last_name);
+            const profileUrl = user.profile_url || '';
+            let initials = 'U';
+            
+            if (profileUrl && profileUrl.includes('ui-avatars.com')) {
+                // Extract name parameter from ui-avatars URL
+                const nameMatch = profileUrl.match(/name=([^&]+)/);
+                if (nameMatch) {
+                    const name = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
+                    const parts = name.split(' ').filter(part => part.length > 0);
+                    if (parts.length > 0) {
+                        initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
+                    }
+                }
+            }
+
+            // Replace img with a styled div showing initials
+            const initialDiv = document.createElement('div');
+            initialDiv.className = 'sidebar-profile-initial';
+            initialDiv.textContent = initials;
+            initialDiv.style.width = '50px';
+            initialDiv.style.height = '50px';
+            initialDiv.style.borderRadius = '50%';
+            initialDiv.style.display = 'flex';
+            initialDiv.style.alignItems = 'center';
+            initialDiv.style.justifyContent = 'center';
+            initialDiv.style.backgroundColor = '#d0d0d0';
+            initialDiv.style.color = '#333';
+            initialDiv.style.fontWeight = 'bold';
+            initialDiv.style.fontSize = '16px';
+            initialDiv.style.minWidth = '50px';
+            initialDiv.style.minHeight = '50px';
+            initialDiv.style.flexShrink = '0';
+
+            img.replaceWith(initialDiv);
         };
 
         const div = document.createElement('div');
@@ -326,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isCurrentUser = senderId === currentUserUuid;
 
         // Display the message in the chat container (uses server timestamp if present)
-        displayMessage(message, senderId, isCurrentUser, timestamp, senderFirstName, senderLastName, receiverFirstName, receiverLastName);
+        displayMessage(message, senderId, isCurrentUser, timestamp);
 
         // Scroll to bottom instantly to show the latest message
         scrollToBottom();

@@ -24,19 +24,14 @@ def profile_image_url(profile_obj):
     except:
         pass
     
-    # Return a placeholder avatar URL with user initials
+    # Return a placeholder avatar URL with user's initials/name
     if profile_obj and profile_obj.user:
         user = profile_obj.user
-        # Get initials from first_name and last_name
-        first_initial = user.first_name[0] if user.first_name else ""
-        last_initial = user.last_name[0] if user.last_name else ""
-        initials = f"{first_initial}{last_initial}".strip()
-        
-        if not initials:
-            # Fall back to username or email
-            initials = (user.username or user.email or "User")[:2]
-        
-        return f"https://ui-avatars.com/api/?name={initials}&background=random&size=128"
+        # Prefer full name, fallback to username, then email
+        name = f"{user.first_name} {user.last_name}".strip()
+        if not name:
+            name = user.username or user.email or "User"
+        return f"https://ui-avatars.com/api/?name={name.replace(' ', '+')}&background=random&size=128"
     
     return "https://ui-avatars.com/api/?name=User&background=random&size=128"
 

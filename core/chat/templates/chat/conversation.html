@@ -33,7 +33,10 @@
                     <li>
                         <a href="{% url 'chat:chat_with' user.id %}">
                             <img width="50px" height="50px" 
-                                src="{{ user.profile|profile_image_url }}" alt="Profile Picture">
+                                src="{{ user.profile|profile_image_url }}" alt="Profile Picture"
+                                data-user-name="{{ user.first_name }} {{ user.last_name }}"
+                                style="border-radius: 50%; object-fit: cover;"
+                                class="sidebar-profile-img">
                             <div style="flex: 1;">
                                 <h5><b>{{ user.first_name }} {{ user.last_name }}</b></h5>
                                 {% if user.business %}
@@ -75,12 +78,18 @@
                                 <p class="text-center date">{{ message.timestamp|date:"M d Y D - H:i" }}</p>
                                 <div class="chat-message-sender mb-3" style="margin-bottom: 5px;">
                                     <span class="chat-sender"  style="background-color: #a0a0a0; padding-top: 2px; padding-bottom: 3px; padding-left: 10px; padding-right: 10px; border-radius: 20px;">{{ message.content }}</span>
-                                    <img src="{{ request.user.profile|profile_image_url }}" alt="">
+                                    <img src="{{ request.user.profile|profile_image_url }}" alt="" 
+                                        data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                        style="border-radius: 50%; object-fit: cover; width: 40px; height: 40px;"
+                                        class="chat-profile-img">
                                 </div>
                             {% else %}
                                 <p class="text-center date">{{ message.timestamp|date:"M d Y D - H:i" }}</p>
                                 <div class="chat-message-receiver mb-3">
-                                    <img src="{{ message.sender.profile|profile_image_url }}" alt="">
+                                    <img src="{{ message.sender.profile|profile_image_url }}" alt=""
+                                        data-user-name="{{ message.sender.first_name }} {{ message.sender.last_name }}"
+                                        style="border-radius: 50%; object-fit: cover; width: 40px; height: 40px;"
+                                        class="chat-profile-img">
                                     <span class="chat-receiver" style="background-color: #a0a0a0; padding-top: 2px; padding-bottom: 3px; padding-left: 10px; padding-right: 10px; border-radius: 20px;">{{ message.content }}</span>
                                 </div>
                             {% endif %}
@@ -104,10 +113,6 @@
             <input type="hidden" id="current-user-uuid" value="{{ request.user.id }}">
             <input type="hidden" id="sender-profile-image" value="{{ request.user.profile|profile_image_url }}">
             <input type="hidden" id="receiver-profile-image" value="{{ current_user.profile|profile_image_url }}">
-            <input type="hidden" id="sender-first-name" value="{{ request.user.first_name }}">
-            <input type="hidden" id="sender-last-name" value="{{ request.user.last_name }}">
-            <input type="hidden" id="receiver-first-name" value="{{ current_user.first_name }}">
-            <input type="hidden" id="receiver-last-name" value="{{ current_user.last_name }}">
         </div>
     </div>
     </div>
@@ -115,6 +120,48 @@
 {% include 'chat/footer.html' %}
 <script>
     const currentUserId = "{{ request.user.id }}";
+    
+    // Handle image errors for existing images (template-loaded)
+    document.addEventListener('DOMContentLoaded', function() {
+        function handleImageError(img) {
+            const userName = img.getAttribute('data-user-name') || 'User';
+            let initials = 'U';
+            
+            // Extract initials from user name
+            const parts = userName.trim().split(' ').filter(part => part.length > 0);
+            if (parts.length > 0) {
+                initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
+            }
+            
+            // Create a styled div to replace the image
+            const initialDiv = document.createElement('div');
+            initialDiv.className = 'profile-initial';
+            initialDiv.textContent = initials;
+            initialDiv.style.width = img.getAttribute('width') + 'px' || '50px';
+            initialDiv.style.height = img.getAttribute('height') + 'px' || '50px';
+            initialDiv.style.borderRadius = '50%';
+            initialDiv.style.display = 'flex';
+            initialDiv.style.alignItems = 'center';
+            initialDiv.style.justifyContent = 'center';
+            initialDiv.style.backgroundColor = '#d0d0d0';
+            initialDiv.style.color = '#333';
+            initialDiv.style.fontWeight = 'bold';
+            initialDiv.style.fontSize = img.getAttribute('width') === '50' ? '16px' : '14px';
+            initialDiv.style.minWidth = img.getAttribute('width') + 'px' || '50px';
+            initialDiv.style.minHeight = img.getAttribute('height') + 'px' || '50px';
+            initialDiv.style.flexShrink = '0';
+            
+            img.replaceWith(initialDiv);
+        }
+        
+        // Set error handlers for all profile images
+        const profileImages = document.querySelectorAll('.sidebar-profile-img, .chat-profile-img');
+        profileImages.forEach(img => {
+            img.addEventListener('error', function() {
+                handleImageError(this);
+            });
+        });
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/conversation.js' %}"></script>
