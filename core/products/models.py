@@ -194,7 +194,7 @@ class SellerReport(models.Model):
     seller_name = models.CharField(max_length=100)
     shop_name = models.CharField(max_length=100)
     message = models.TextField()
-    evidence_image = models.ImageField(upload_to='evidence_images/')
+    evidence_image = models.ImageField(upload_to='evidence_images/', max_length=500)
     submitted_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
