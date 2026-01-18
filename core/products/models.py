@@ -34,6 +34,8 @@ class Business(models.Model):
     def business_image_url(self):
         try:
             url = self.business_image.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -48,6 +50,8 @@ class Business(models.Model):
     def business_logo_url(self):
         try:
             url = self.business_logo.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -107,6 +111,8 @@ class Category(models.Model):
     def category_image_url(self):
         try:
             url = self.image.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -158,6 +164,8 @@ class Product(models.Model):
     def product_image_url(self):
         try:
             url = self.product_image.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -171,6 +179,8 @@ class Product(models.Model):
     def product1_image_url(self):
         try:
             url = self.product_image1.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -184,6 +194,8 @@ class Product(models.Model):
     def product2_image_url(self):
         try:
             url = self.product_image2.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -197,6 +209,8 @@ class Product(models.Model):
     def product3_image_url(self):
         try:
             url = self.product_image3.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
@@ -210,6 +224,8 @@ class Product(models.Model):
     def product4_image_url(self):
         try:
             url = self.product_image4.url
+            if url and url.startswith('https://res.cloudinary.com/'):
+                return url
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:

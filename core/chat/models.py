@@ -62,7 +62,10 @@ class Profile(models.Model):
         try:
             if self.profile and self.profile.url:
                 url = self.profile.url
-                # If it's already a full URL, return it
+                # If it's already a full Cloudinary URL (starts with https://res.cloudinary.com), return it
+                if url.startswith('https://res.cloudinary.com/'):
+                    return url
+                # If it's a full URL from elsewhere, return it
                 if url.startswith('http://') or url.startswith('https://'):
                     return url
                 # If it's a relative path (from Cloudinary storage), construct full URL

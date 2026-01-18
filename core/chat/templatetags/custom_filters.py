@@ -28,7 +28,10 @@ def profile_image_url(profile_obj):
             
             # If URL exists, ensure it's a full Cloudinary URL
             if url:
-                # Check if it's already a full URL (from model method or direct Cloudinary)
+                # Check if it's already a complete Cloudinary URL
+                if url.startswith('https://res.cloudinary.com/'):
+                    return url
+                # Check if it's any other full URL
                 if url.startswith('http://') or url.startswith('https://'):
                     return url
                 
