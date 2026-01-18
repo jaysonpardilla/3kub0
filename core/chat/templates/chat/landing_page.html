@@ -101,22 +101,6 @@
                               </div>
                            {% endif %}
                         </div>
-                        {% if request.user.is_authenticated %}
-                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                              <button type="submit" class="btn btn-buy text-dark" disabled>
-                                 <h6 class="text-secondary">Buy</h6>
-                              </button>
-                           {% else %}
-                              <button type="submit" class="btn btn-buy text-dark by-button">
-                                 <h6>Buy</h6>
-                              </button>
-                           {% endif %}
-                        {% else %}
-                           <button type="submit" class="btn btn-buy text-dark" disabled>
-                              <h6 class="text-secondary">Login to Buy</h6>
-                           </button>
-                        {% endif %}
-
                      </div>
                   </div>
                </div>
@@ -295,21 +279,6 @@
                         </div>
                      {% endif %}
                   </div>
-                  {% if request.user.is_authenticated %}
-                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                        <button type="submit" class="btn btn-buy text-dark" disabled>
-                           <h6 class="text-secondary">Buy</h6>
-                        </button>
-                     {% else %}
-                        <button type="submit" class="btn btn-buy text-dark by-button">
-                           <h6>Buy</h6>
-                        </button>
-                     {% endif %}
-                  {% else %}
-                     <button type="submit" class="btn btn-buy text-dark" disabled>
-                        <h6 class="text-secondary">Login to Buy</h6>
-                     </button>
-                  {% endif %}
 
                </div>
             </div>
@@ -422,21 +391,6 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if request.user.is_authenticated %}
-                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                           <button type="submit" class="btn btn-buy text-dark" disabled>
-                              <h6 class="text-secondary">Buy</h6>
-                           </button>
-                        {% else %}
-                           <button type="submit" class="btn btn-buy text-dark by-button">
-                              <h6>Buy</h6>
-                           </button>
-                        {% endif %}
-                     {% else %}
-                        <button type="submit" class="btn btn-buy text-dark" disabled>
-                           <h6 class="text-secondary">Login to Buy</h6>
-                        </button>
-                     {% endif %}
 
                   </div>
                </div>
@@ -511,21 +465,6 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if request.user.is_authenticated %}
-                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                           <button type="submit" class="btn btn-buy text-dark" disabled>
-                              <h6 class="text-secondary">Buy</h6>
-                           </button>
-                        {% else %}
-                           <button type="submit" class="btn btn-buy text-dark by-button">
-                              <h6>Buy</h6>
-                           </button>
-                        {% endif %}
-                     {% else %}
-                        <button type="submit" class="btn btn-buy text-dark" disabled>
-                           <h6 class="text-secondary">Login to Buy</h6>
-                        </button>
-                     {% endif %}
 
                   </div>
                </div>
