@@ -138,19 +138,8 @@ STATICFILES_DIRS = [
 ]
 
 # WhiteNoise configuration for efficient static file serving
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Enable MIME type detection for proper CSS/JS serving
-MIMETYPES = {
-    '.css': 'text/css',
-    '.js': 'application/javascript',
-    '.json': 'application/json',
-    '.woff': 'font/woff',
-    '.woff2': 'font/woff2',
-    '.ttf': 'font/ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.svg': 'image/svg+xml',
-}
+# Use StaticFilesStorage instead of ManifestStaticFilesStorage to avoid manifest issues
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Cloudinary Configuration - Configure Django storage backend
 # django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
