@@ -116,7 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 # If it contains cloudinary host, try extracting public_id
                                 if 'res.cloudinary.com' in url:
                                     if '/image/upload/' in url:
-                                        public_id = url.split('/image/upload/', 1)[1]
+                                        public_id = url.split('/image/upload/')[-1]
                                         cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                                         return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
                                     if url.startswith('https://res.cloudinary.com/'):

@@ -167,7 +167,7 @@ class Product(models.Model):
             # Normalize malformed stored values containing Cloudinary host
             if 'res.cloudinary.com' in url:
                 if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/', 1)[1]
+                    public_id = url.split('/image/upload/')[-1]
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
@@ -188,7 +188,7 @@ class Product(models.Model):
             url = self.product_image1.url
             if 'res.cloudinary.com' in url:
                 if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/', 1)[1]
+                    public_id = url.split('/image/upload/')[-1]
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
@@ -209,7 +209,7 @@ class Product(models.Model):
             url = self.product_image2.url
             if 'res.cloudinary.com' in url:
                 if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/', 1)[1]
+                    public_id = url.split('/image/upload/')[-1]
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
@@ -230,7 +230,7 @@ class Product(models.Model):
             url = self.product_image3.url
             if 'res.cloudinary.com' in url:
                 if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/', 1)[1]
+                    public_id = url.split('/image/upload/')[-1]
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
@@ -251,7 +251,7 @@ class Product(models.Model):
             url = self.product_image4.url
             if 'res.cloudinary.com' in url:
                 if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/', 1)[1]
+                    public_id = url.split('/image/upload/')[-1]
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
