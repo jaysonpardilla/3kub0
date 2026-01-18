@@ -41,6 +41,7 @@ def upload_file(local_path, public_id):
             overwrite=True,
             use_filename=False,
             unique_filename=False
+            ,upload_preset=getattr(settings, 'CLOUDINARY_UPLOAD_PRESET', None)
         )
         return True, result
     except Exception as e:

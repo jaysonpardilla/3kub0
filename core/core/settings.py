@@ -156,20 +156,38 @@ WHITENOISE_AUTOREFRESH = False
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_SKIP_COMPRESSION_FILETYPES = ('jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz')
 
-# Cloudinary Configuration - Configure Django storage backend
-# django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
+# Cloudinary Configuration - prefer single CLOUDINARY_URL if available
+# CLOUDINARY_URL format: cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL', '')
+if CLOUDINARY_URL:
+    try:
+        _, rest = CLOUDINARY_URL.split('://', 1)
+        creds, cloud = rest.split('@', 1)
+        API_KEY, API_SECRET = creds.split(':', 1)
+        CLOUD_NAME = cloud
+    except Exception:
+        CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'deyrmzn1x')
+        API_KEY = os.getenv('CLOUDINARY_API_KEY', '786333672776349')
+        API_SECRET = os.getenv('CLOUDINARY_API_SECRET', 'KyDW-AJ0wTkcVkcWPrqd_LLRlPg')
+else:
+    CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'deyrmzn1x')
+    API_KEY = os.getenv('CLOUDINARY_API_KEY', '786333672776349')
+    API_SECRET = os.getenv('CLOUDINARY_API_SECRET', 'KyDW-AJ0wTkcVkcWPrqd_LLRlPg')
+
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'deyrmzn1x'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY', '786333672776349'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', 'KyDW-AJ0wTkcVkcWPrqd_LLRlPg'),
-    'FOLDER': 'ekubo/media',  # Organize uploads in a folder
-    'SECURE': True,  # Use secure HTTPS URLs
+    'CLOUD_NAME': CLOUD_NAME,
+    'API_KEY': API_KEY,
+    'API_SECRET': API_SECRET,
+    'FOLDER': os.getenv('CLOUDINARY_FOLDER', 'ekubo/media'),
+    'SECURE': True,
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# Upload preset for unsigned uploads (if using unsigned preset flows)
+CLOUDINARY_UPLOAD_PRESET = os.getenv('CLOUDINARY_UPLOAD_PRESET', 'ekubo-unsigned')
+
 # Cloudinary URL configuration - generates proper Cloudinary URLs
-# Format: https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}
 MEDIA_URL = f"https://res.cloudinary.com/{CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/"
 
 # Also configure cloudinary SDK for direct cloudinary library usage
