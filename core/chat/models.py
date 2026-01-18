@@ -58,13 +58,21 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.street if self.street else 'No Address'}"
     
     def profile_image_url(self):
-        """Return the profile image URL or a fallback placeholder"""
+        """Return the full Cloudinary URL for profile image or a fallback placeholder"""
         try:
             if self.profile and self.profile.url:
-                return self.profile.url
+                url = self.profile.url
+                # If it's already a full URL, return it
+                if url.startswith('http://') or url.startswith('https://'):
+                    return url
+                # If it's a relative path (from Cloudinary storage), construct full URL
+                if url:
+                    from django.conf import settings
+                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
             pass
-        # Return a placeholder avatar URL (using DUI service)
+        # Return a placeholder avatar URL (using ui-avatars service)
         return f"https://ui-avatars.com/api/?name={self.user.username}&background=random&size=128"
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

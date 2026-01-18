@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Kubo: Home</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
     <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
@@ -116,7 +117,7 @@
 <!-- End Search Results Section -->
 
    <!-- Hero Section -->
-   <section class="mt-6 slide-up" style="font-family: 'Arial', sans-serif;">
+   <section class="mt-6 slide-up" style="font-family: 'Arial', sans-serif; margin-top: 20px;">
       <div class="container">
          <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -201,15 +202,6 @@
          </div>
          <div class="category-slider-wrapper">
             <div class="category-slider" style="font-family: 'Arial', sans-serif;">
-               {% for category in categories %}
-               <div class="category-card" style="border: 1px solid #D5D5D5;">
-                  <a href="{% url 'products:show_products_category' category.id %}">
-                     <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%" />
-                  </a>
-                  <h6 class="text-dark mt-3">{{ category.name|title }}</h6>
-               </div>
-               {% endfor %}
-               <!-- Duplicate categories for seamless looping -->
                {% for category in categories %}
                <div class="category-card" style="border: 1px solid #D5D5D5;">
                   <a href="{% url 'products:show_products_category' category.id %}">

@@ -34,17 +34,29 @@ class Business(models.Model):
     def business_image_url(self):
         try:
             url = self.business_image.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
 
     @property
     def business_logo_url(self):
         try:
             url = self.business_logo.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
 
     def __str__(self):
         return self.business_name
@@ -95,9 +107,15 @@ class Category(models.Model):
     def category_image_url(self):
         try:
             url = self.image.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
 
 # Modify the Product Model to Add Method for Sales Reporting
 class Product(models.Model):
@@ -140,34 +158,67 @@ class Product(models.Model):
     def product_image_url(self):
         try:
             url = self.product_image.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
     
     def product1_image_url(self):
         try:
             url = self.product_image1.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
+    
     def product2_image_url(self):
         try:
             url = self.product_image2.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
+    
     def product3_image_url(self):
         try:
             url = self.product_image3.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
+    
     def product4_image_url(self):
         try:
             url = self.product_image4.url
+            if url and (url.startswith('http://') or url.startswith('https://')):
+                return url
+            if url:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
         except:
-            url = ''
-        return url
+            pass
+        return ''
 
     def __str__(self):
         return self.product_name

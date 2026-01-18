@@ -99,6 +99,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Build additional 'new_conversation' payloads so sidebars can update
             # Helper function to get profile URL or generate a fallback avatar
             def get_profile_url(user):
+                """
+                Returns the full Cloudinary URL for a user's profile image with fallback to ui-avatars.com
+                Mirrors the logic from custom_filters.py profile_image_url filter.
+                """
                 try:
                     from django.conf import settings
                     profile = getattr(user, 'profile', None)
@@ -107,20 +111,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         if profile_image:
                             url = profile_image.url
                             
-                            # If URL exists, ensure it's a full URL
+                            # If URL exists, ensure it's a full Cloudinary URL
                             if url:
-                                # Check if it's already a full Cloudinary URL
+                                # Check if it's already a full URL
                                 if url.startswith('http://') or url.startswith('https://'):
                                     return url
                                 
                                 # If it's a relative path, construct the full Cloudinary URL
-                                if not url.startswith('/'):
-                                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+                                if url and not url.startswith('/'):
+                                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
                                 
                                 return url
                 except Exception:
                     pass
+                
                 # Fallback: generate avatar using user's name from ui-avatars.com
                 name = f"{user.first_name} {user.last_name}".strip()
                 if not name:

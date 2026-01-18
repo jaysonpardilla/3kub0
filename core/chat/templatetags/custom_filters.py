@@ -18,28 +18,31 @@ def in_wishlist(product, user):
 
 @register.filter
 def profile_image_url(profile_obj):
+    """
+    Returns the full Cloudinary URL for a profile image with fallback to ui-avatars.com
+    Handles both relative paths (from ImageField.url) and full URLs (from model method).
+    """
     try:
         if profile_obj and profile_obj.profile:
             url = profile_obj.profile.url
             
-            # If URL exists, return it as-is
+            # If URL exists, ensure it's a full Cloudinary URL
             if url:
-                # Check if it's already a full Cloudinary URL
+                # Check if it's already a full URL (from model method or direct Cloudinary)
                 if url.startswith('http://') or url.startswith('https://'):
                     return url
                 
                 # If it's a relative path, construct the full Cloudinary URL
-                if not url.startswith('/'):
-                    # It's a public_id, construct full URL
+                if url and not url.startswith('/'):
                     from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
                     return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
                 
                 return url
     except:
         pass
     
-    # Return a placeholder avatar URL with user's initials/name
+    # Fallback: Return a placeholder avatar URL with user's initials/name
     if profile_obj and profile_obj.user:
         user = profile_obj.user
         # Prefer full name, fallback to username, then email
@@ -48,5 +51,7 @@ def profile_image_url(profile_obj):
             name = user.username or user.email or "User"
         return f"https://ui-avatars.com/api/?name={name.replace(' ', '+')}&background=random&size=128"
     
+    # Ultimate fallback
+    return "https://ui-avatars.com/api/?name=User&background=random&size=128"
     return "https://ui-avatars.com/api/?name=User&background=random&size=128"
 
