@@ -62,9 +62,10 @@
                                        <small>unavailable</small>
                                     {% endif %}
                                  </div>
+                                 {% with is_in_wishlist=products|in_wishlist:request.user %}
                                  <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
                                     {% csrf_token %}
-                                    {% if products|in_wishlist:request.user %}
+                                    {% if is_in_wishlist %}
                                        <button class="wishlist-button in-wishlist" title="Remove from wishlist">
                                           <i class="bi bi-heart-fill"></i>
                                        </button>
@@ -74,6 +75,7 @@
                                        </button>
                                     {% endif %}
                                  </form>
+                                 {% endwith %}
                               </div>
                               <a href="{% url 'products:view_product' products.id %}">
                                  <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -246,9 +248,10 @@
                                  <small>unavailable</small>
                               {% endif %}
                            </div>
+                        {% with is_in_wishlist=products|in_wishlist:request.user %}
                         <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
                            {% csrf_token %}
-                           {% if products|in_wishlist:request.user %}
+                           {% if is_in_wishlist %}
                               <button class="wishlist-button in-wishlist" title="Remove from wishlist">
                                  <i class="bi bi-heart-fill"></i>
                               </button>
@@ -258,6 +261,7 @@
                               </button>
                            {% endif %}
                         </form>
+                        {% endwith %}
                      </div>
                      <a href="{% url 'products:view_product' products.id %}">
                         <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -357,9 +361,10 @@
                                  <small>unavailable</small>
                               {% endif %}
                            </div>
+                           {% with is_in_wishlist=products|in_wishlist:request.user %}
                            <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
                               {% csrf_token %}
-                              {% if products|in_wishlist:request.user %}
+                              {% if is_in_wishlist %}
                                  <button class="wishlist-button in-wishlist" title="Remove from wishlist">
                                     <i class="bi bi-heart-fill"></i>
                                  </button>
@@ -369,6 +374,7 @@
                                  </button>
                               {% endif %}
                            </form>
+                           {% endwith %}
                         </div>
                         <a href="{% url 'products:view_product' products.id %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -431,9 +437,10 @@
                                  <small>unavailable</small>
                               {% endif %}
                            </div>
+                           {% with is_in_wishlist=products|in_wishlist:request.user %}
                            <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
                               {% csrf_token %}
-                              {% if products|in_wishlist:request.user %}
+                              {% if is_in_wishlist %}
                                  <button class="wishlist-button in-wishlist" title="Remove from wishlist">
                                     <i class="bi bi-heart-fill"></i>
                                  </button>
@@ -443,6 +450,7 @@
                                  </button>
                               {% endif %}
                            </form>
+                           {% endwith %}
                         </div>
                         <a href="{% url 'products:view_product' products.id %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
