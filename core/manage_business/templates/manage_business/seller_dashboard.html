@@ -11,108 +11,108 @@
     <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
     <link rel="stylesheet" href="{% static 'css/messages.css' %}">
     <style>
-   @media (max-width: 768px) {
-      .row {
-         flex-direction: column;
+      @media (max-width: 768px) {
+         .row {
+            flex-direction: column;
+         }
+         .order-section, .product-section {
+            width: 100%;
+         }
+         .order-section {
+            margin-bottom: 20px;
+         }
       }
-      .order-section, .product-section {
-         width: 100%;
+
+      /* Scrollable Table */
+      .table-responsive {
+         overflow-x: auto;
       }
+
+      th, td {
+         text-align: left;
+         padding: 8px;
+         vertical-align: middle;
+         word-wrap: break-word;
+      }
+
+      img {
+         max-width: 80px;
+         height: auto;
+      }
+
+      /* Order section scrollable */
       .order-section {
-         margin-bottom: 20px;
+         max-height: 600px;
+         overflow-y: auto; /* Add vertical scrolling */
       }
-   }
 
-   /* Scrollable Table */
-   .table-responsive {
-      overflow-x: auto;
-   }
-
-   th, td {
-      text-align: left;
-      padding: 8px;
-      vertical-align: middle;
-      word-wrap: break-word;
-   }
-
-   img {
-      max-width: 80px;
-      height: auto;
-   }
-
-   /* Order section scrollable */
-   .order-section {
-      max-height: 600px;
-      overflow-y: auto; /* Add vertical scrolling */
-   }
-
-   /* Product section scrollable */
-   .product-section {
-      max-height: 600px; /* Set a fixed height */
-      overflow-y: auto;  /* Make it scrollable vertically */
-   }
-
-   /* Button Adjustments */
-   .accept-btn, .reject-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-      border-radius: 5px;
-      width: 100%; /* Full width for small screens */
-   }
-
-   .reject-btn {
-      background-color: #dc3545;
-   }
-
-   .accept-btn:hover {
-      background-color: #218838;
-   }
-
-   .reject-btn:hover {
-      background-color: #c82333;
-   }
-
-   .table_head { 
-      background-color: rgb(92, 184, 109);
-   }
-
-   .tr td {
-      background-color: beige;
-   }
-
-   /* Responsive Adjustments */
-   @media (max-width: 768px) {
-      th, td {
-         font-size: 14px;
+      /* Product section scrollable */
+      .product-section {
+         max-height: 600px; /* Set a fixed height */
+         overflow-y: auto;  /* Make it scrollable vertically */
       }
-      .btn {
-         width: 100%;
-      }
-   }
 
-   @media (max-width: 420px) {
-      th, td {
-         font-size: 12px;
+      /* Button Adjustments */
+      .accept-btn, .reject-btn {
+         background-color: #28a745;
+         color: white;
+         border: none;
+         padding: 8px 12px;
+         cursor: pointer;
+         border-radius: 5px;
+         width: 100%; /* Full width for small screens */
       }
-   }
-   /* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
-   .fade-out td, .fade-out th {
-      transition: opacity 0.6s ease, padding 0.6s ease;
-      opacity: 0 !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-   }
-   .fade-out {
-      transition: height 0.6s ease, margin 0.6s ease;
-      height: 0 !important;
-      margin: 0 !important;
-   }
+
+      .reject-btn {
+         background-color: #dc3545;
+      }
+
+      .accept-btn:hover {
+         background-color: #218838;
+      }
+
+      .reject-btn:hover {
+         background-color: #c82333;
+      }
+
+      .table_head { 
+         background-color: rgb(92, 184, 109);
+      }
+
+      .tr td {
+         background-color: beige;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+         th, td {
+            font-size: 14px;
+         }
+         .btn {
+            width: 100%;
+         }
+      }
+
+      @media (max-width: 420px) {
+         th, td {
+            font-size: 12px;
+         }
+      }
+      /* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
+      .fade-out td, .fade-out th {
+         transition: opacity 0.6s ease, padding 0.6s ease;
+         opacity: 0 !important;
+         padding-top: 0 !important;
+         padding-bottom: 0 !important;
+      }
+      .fade-out {
+         transition: height 0.6s ease, margin 0.6s ease;
+         height: 0 !important;
+         margin: 0 !important;
+      }
     </style>
 </head>
-<body>
+<body style="background-color: #EDEBE2">
     {% include 'chat/navbar.html' %}
 
 
@@ -285,7 +285,6 @@
       </div>
    </div>
 </div>
-
 
 {% include 'chat/footer.html' %}
 <script>
