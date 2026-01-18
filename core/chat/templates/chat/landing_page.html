@@ -265,19 +265,25 @@
                         <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                      </div>
                      {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        <div>
                            <form action="{% url 'products:order_details' products.id %}" method="POST">
                               {% csrf_token %}
-                              <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                              <button type="submit" class="btn btn-buy text-dark" disabled>
+                                 <h6 class="text-secondary">Buy</h6>
+                              </button>
                            </form>
                         </div>
                      {% else %}
                         <div>
                            <form action="{% url 'products:order_details' products.id %}" method="POST">
                               {% csrf_token %}
-                              <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
+                              <button type="submit" class="btn btn-buy text-dark by-button">
+                                 <h6>Buy</h6>
+                              </button>
                            </form>
                         </div>
                      {% endif %}
+
                   </div>
 
                </div>
