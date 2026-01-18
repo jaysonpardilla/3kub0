@@ -65,3 +65,60 @@ def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
             return ContentFile(uploaded_file.read())
         except Exception:
             return None
+
+
+    def build_cloudinary_url(public_id_or_url, cloud_name=None):
+        """Return a full Cloudinary URL including an extension when possible.
+
+        - If `public_id_or_url` is already a full URL, return it unchanged.
+        - If it contains '/image/upload/', assume it's a Cloudinary path and try
+          to append the correct extension using the admin API; default to png.
+        - Otherwise treat it as a public_id and attempt to detect format via
+          `cloudinary.api.resource`. Falls back to `.png` when detection fails.
+        """
+        try:
+            if not public_id_or_url:
+                return ''
+            s = str(public_id_or_url)
+            if s.startswith('http://') or s.startswith('https://'):
+                return s
+
+            # Normalize: drop leading slashes
+            if s.startswith('/'):
+                s = s.lstrip('/')
+
+            # If already contains upload path, take the part after it
+            if '/image/upload/' in s:
+                public_part = s.split('/image/upload/')[-1]
+            else:
+                public_part = s
+
+            # If public_part already has an extension, return constructed URL
+            if '.' in public_part and len(public_part.rsplit('.', 1)[-1]) <= 4:
+                fmt = public_part.rsplit('.', 1)[-1]
+                public_id = public_part
+            else:
+                public_id = public_part
+                fmt = None
+
+            # Determine cloud name
+            if not cloud_name:
+                from django.conf import settings
+                cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', '')
+
+            # Try to fetch resource metadata to get the real format
+            if not fmt:
+                try:
+                    import cloudinary.api as _api
+                    info = _api.resource(public_id)
+                    fmt = info.get('format')
+                except Exception:
+                    fmt = None
+
+            if fmt:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{fmt}"
+            else:
+                # Fallback to png extension if unknown
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.png"
+        except Exception:
+            return ''

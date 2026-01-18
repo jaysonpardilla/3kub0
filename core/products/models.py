@@ -39,9 +39,10 @@ class Business(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -55,9 +56,10 @@ class Business(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -116,9 +118,10 @@ class Category(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -176,9 +179,10 @@ class Product(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -197,9 +201,10 @@ class Product(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -218,9 +223,10 @@ class Product(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -239,9 +245,10 @@ class Product(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
@@ -260,9 +267,10 @@ class Product(models.Model):
             if url and (url.startswith('http://') or url.startswith('https://')):
                 return url
             if url:
+                from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                return build_cloudinary_url(url, cloud_name=cloud_name)
         except:
             pass
         return ''
