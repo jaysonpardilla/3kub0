@@ -25,8 +25,8 @@ class Business(models.Model):
     business_description = models.CharField(max_length=255)
     business_contact_number = models.CharField(max_length=255, blank=True)
     business_address = models.CharField(max_length=255, blank=True)
-    business_image = models.ImageField(upload_to='business_image/', blank=True, null=True)
-    business_logo = models.ImageField(upload_to='business_logo/', blank=True, null=True)
+    business_image = models.ImageField(upload_to='business_image/', blank=True, null=True, max_length=500)
+    business_logo = models.ImageField(upload_to='business_logo/', blank=True, null=True, max_length=500)
     business_created = models.DateTimeField(auto_now_add=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -145,11 +145,11 @@ class Product(models.Model):
     product_description = models.TextField()
     product_price = models.DecimalField(max_digits=10, decimal_places=2)
     product_stock = models.PositiveIntegerField()
-    product_image = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    product_image1 = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    product_image2 = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    product_image3 = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    product_image4 = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    product_image = models.ImageField(upload_to='product_images/', blank=True, null=True, max_length=500)
+    product_image1 = models.ImageField(upload_to='product_images/', blank=True, null=True, max_length=500)
+    product_image2 = models.ImageField(upload_to='product_images/', blank=True, null=True, max_length=500)
+    product_image3 = models.ImageField(upload_to='product_images/', blank=True, null=True, max_length=500)
+    product_image4 = models.ImageField(upload_to='product_images/', blank=True, null=True, max_length=500)
     created_at = models.DateTimeField(default=timezone.now)
 
 

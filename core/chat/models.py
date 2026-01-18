@@ -41,7 +41,7 @@ class Message(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    profile = models.ImageField(upload_to='user_profiles', blank=True, null=True)  # Remove default to avoid 404 errors
+    profile = models.ImageField(upload_to='user_profiles', blank=True, null=True, max_length=500)  # Remove default to avoid 404 errors
     province = models.CharField(max_length=100, null=True, blank=True)
     municipality = models.CharField(max_length=100, null=True, blank=True)
     street = models.CharField(max_length=200,  null=True, blank=True)
