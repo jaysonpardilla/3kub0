@@ -61,20 +61,11 @@
                                     <small>unavailable</small>
                                  {% endif %}
                               </div>
-                              {% with is_in_wishlist=products|in_wishlist:request.user %}
-                              <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
-                                 {% csrf_token %}
-                                 {% if is_in_wishlist %}
-                                    <button class="wishlist-button in-wishlist" title="Remove from wishlist">
-                                       <i class="bi bi-heart-fill"></i>
-                                    </button>
-                                 {% else %}
-                                    <button class="wishlist-button" title="Add to wishlist">
-                                       <i class="bi bi-heart"></i>
-                                    </button>
-                                 {% endif %}
+                              <form>
+                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
+                                    <i class="bi bi-heart-fill"></i>
+                                 </button>
                               </form>
-                              {% endwith %}
                            </div>
                            <a href="{% url 'products:view_product' products.id %}">
                               <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -85,21 +76,11 @@
                            <div>
                               <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                            </div>
-                           {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                               <div>
-                                 <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                    {% csrf_token %}
+                                 <form >
                                     <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
                                  </form>
                               </div>
-                           {% else %}
-                              <div>
-                                 <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
-                                 </form>
-                              </div>
-                           {% endif %}
                         </div>
                      </div>
                   </div>
@@ -240,20 +221,11 @@
                               <small>unavailable</small>
                            {% endif %}
                         </div>
-                        {% with is_in_wishlist=products|in_wishlist:request.user %}
-                        <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
-                           {% csrf_token %}
-                           {% if is_in_wishlist %}
-                              <button class="wishlist-button in-wishlist" title="Remove from wishlist">
-                                 <i class="bi bi-heart-fill"></i>
-                              </button>
-                           {% else %}
-                              <button class="wishlist-button" title="Add to wishlist">
-                                 <i class="bi bi-heart"></i>
-                              </button>
-                           {% endif %}
+                        <form>
+                           <button class="wishlist-button" title="Add to wishlist">
+                              <i class="bi bi-heart"></i>
+                           </button>
                         </form>
-                        {% endwith %}
                      </div>
                      <a href="{% url 'products:view_product' products.id %}">
                         <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -264,28 +236,15 @@
                      <div>
                         <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                      </div>
-                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                        <div>
-                           <form action="{% url 'products:order_details' products.id %}" method="POST">
-                              {% csrf_token %}
-                              <button type="submit" class="btn btn-buy text-dark" disabled>
-                                 <h6 class="text-secondary">Buy</h6>
-                              </button>
-                           </form>
-                        </div>
-                     {% else %}
-                        <div>
-                           <form action="{% url 'products:order_details' products.id %}" method="POST">
-                              {% csrf_token %}
-                              <button type="submit" class="btn btn-buy text-dark by-button">
-                                 <h6>Buy</h6>
-                              </button>
-                           </form>
-                        </div>
-                     {% endif %}
-
+                     <div>
+                        <form action="{% url 'products:order_details' products.id %}" method="POST">
+                           {% csrf_token %}
+                           <button type="submit" class="btn btn-buy text-dark" disabled>
+                              <h6 class="text-secondary">Buy</h6>
+                           </button>
+                        </form>
+                     </div>
                   </div>
-
                </div>
             </div>
          </div>
@@ -356,20 +315,11 @@
                                  <small>unavailable</small>
                               {% endif %}
                            </div>
-                           {% with is_in_wishlist=products|in_wishlist:request.user %}
-                           <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
-                              {% csrf_token %}
-                              {% if is_in_wishlist %}
-                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
-                                    <i class="bi bi-heart-fill"></i>
-                                 </button>
-                              {% else %}
-                                 <button class="wishlist-button" title="Add to wishlist">
-                                    <i class="bi bi-heart"></i>
-                                 </button>
-                              {% endif %}
+                           <form>
+                              <button class="wishlist-button" title="Add to wishlist">
+                                 <i class="bi bi-heart"></i>
+                              </button>
                            </form>
-                           {% endwith %}
                         </div>
                         <a href="{% url 'products:view_product' products.id %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -381,21 +331,12 @@
                         <div>
                            <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                         </div>
-                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                           <div>
-                              <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                 {% csrf_token %}
-                                 <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
-                              </form>
-                           </div>
-                        {% else %}
-                           <div>
-                              <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                 {% csrf_token %}
-                                 <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
-                              </form>
-                           </div>
-                        {% endif %}
+                        <div>
+                           <form action="{% url 'products:order_details' products.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
+                           </form>
+                        </div>
                      </div>
 
                   </div>
@@ -430,20 +371,11 @@
                                  <small>unavailable</small>
                               {% endif %}
                            </div>
-                           {% with is_in_wishlist=products|in_wishlist:request.user %}
-                           <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
-                              {% csrf_token %}
-                              {% if is_in_wishlist %}
-                                 <button class="wishlist-button in-wishlist" title="Remove from wishlist">
-                                    <i class="bi bi-heart-fill"></i>
-                                 </button>
-                              {% else %}
-                                 <button class="wishlist-button" title="Add to wishlist">
-                                    <i class="bi bi-heart"></i>
-                                 </button>
-                              {% endif %}
+                           <form>
+                              <button class="wishlist-button" title="Add to wishlist">
+                                 <i class="bi bi-heart"></i>
+                              </button>
                            </form>
-                           {% endwith %}
                         </div>
                         <a href="{% url 'products:view_product' products.id %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
@@ -455,21 +387,11 @@
                         <div>
                            <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                         </div>
-                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                            <div>
-                              <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                 {% csrf_token %}
+                              <form >
                                  <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
                               </form>
                            </div>
-                        {% else %}
-                           <div>
-                              <form action="{% url 'products:order_details' products.id %}" method="POST">
-                                 {% csrf_token %}
-                                 <button type="submit" class="btn btn-buy text-dark by-button"><h6>Buy</h6></button>
-                              </form>
-                           </div>
-                        {% endif %}
                      </div>
 
                   </div>
