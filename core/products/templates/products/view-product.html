@@ -248,7 +248,7 @@
                                      {% for review in reviews|slice:":3" %}
                                          <div class="review-card p-3 shadow rounded" style="flex: 1; min-width: 300px; max-width: 32%; background: #fff;">
                                               <div class="d-flex align-items-center mb-2">
-                                              <img src="{{ review.user.profile.profile.url }}" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                              <img src="{{ review.user.profile|profile_image_url }}" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                               <div style="font-family: 'Arial', sans-serif;">
                                                  <h6 class="mb-0"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b></h6>
                                                  <div>

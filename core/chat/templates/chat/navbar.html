@@ -114,7 +114,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'chat:profile_detail' %}">
                             {% if request.user.profile.profile %}
-                                <img src="{{ request.user.profile.profile.url }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #729FF1;">
+                                <img src="{{ request.user.profile|profile_image_url }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #729FF1;">
                             {% else %}
                                 <i class="bi bi-person-circle fs-4"></i>
                             {% endif %}

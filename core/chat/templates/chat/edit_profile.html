@@ -104,7 +104,7 @@
     <div class="form-container slide-up">
         <h5 style="font-family: 'Arial', sans-serif;">Update Your Profile</h5>
         <div class="profile-picture-preview">
-            <img src="{{ request.user.profile.profile.url }}" alt="Profile Picture" id="profilePreview">
+            <img src="{{ request.user.profile|profile_image_url }}" alt="Profile Picture" id="profilePreview">
         </div>
         <form method="post" enctype="multipart/form-data" id="profileForm">
             {% csrf_token %}

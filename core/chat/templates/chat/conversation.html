@@ -33,7 +33,7 @@
                     <li>
                         <a href="{% url 'chat:chat_with' user.id %}">
                             <img width="50px" height="50px" 
-                                src="{{ user.profile.profile.url }}" alt="Profile Picture">
+                                src="{{ user.profile|profile_image_url }}" alt="Profile Picture">
                             <div style="flex: 1;">
                                 <h5><b>{{ user.first_name }} {{ user.last_name }}</b></h5>
                                 {% if user.business %}
@@ -75,12 +75,12 @@
                                 <p class="text-center date">{{ message.timestamp|date:"M d Y D - H:i" }}</p>
                                 <div class="chat-message-sender mb-3" style="margin-bottom: 5px;">
                                     <span class="chat-sender"  style="background-color: #a0a0a0; padding-top: 2px; padding-bottom: 3px; padding-left: 10px; padding-right: 10px; border-radius: 20px;">{{ message.content }}</span>
-                                    <img src="{{ request.user.profile.profile.url }}" alt="">
+                                    <img src="{{ request.user.profile|profile_image_url }}" alt="">
                                 </div>
                             {% else %}
                                 <p class="text-center date">{{ message.timestamp|date:"M d Y D - H:i" }}</p>
                                 <div class="chat-message-receiver mb-3">
-                                    <img src="{{ message.sender.profile.profile.url }}" alt="">
+                                    <img src="{{ message.sender.profile|profile_image_url }}" alt="">
                                     <span class="chat-receiver" style="background-color: #a0a0a0; padding-top: 2px; padding-bottom: 3px; padding-left: 10px; padding-right: 10px; border-radius: 20px;">{{ message.content }}</span>
                                 </div>
                             {% endif %}
@@ -102,8 +102,8 @@
             
             <!-- <input type="hidden" id="user-id-input" value="{{ request.user.id }}"> -->
             <input type="hidden" id="current-user-uuid" value="{{ request.user.id }}">
-            <input type="hidden" id="sender-profile-image" value="{{ request.user.profile.profile.url }}">
-            <input type="hidden" id="receiver-profile-image" value="{{ current_user.profile.profile.url }}">
+            <input type="hidden" id="sender-profile-image" value="{{ request.user.profile|profile_image_url }}">
+            <input type="hidden" id="receiver-profile-image" value="{{ current_user.profile|profile_image_url }}">
         </div>
     </div>
     </div>
