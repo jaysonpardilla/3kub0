@@ -237,12 +237,12 @@
                   <div class="text-center position-relative">
                      <div class="position-absolute top-0 start-0" style="font-family: 'Arial', sans-serif;">
                         <div class="availability">
-                              {% if products.product_stock >= 1 %}
-                                 <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
-                              {% else %}
-                                 <small>unavailable</small>
-                              {% endif %}
-                           </div>
+                           {% if products.product_stock >= 1 %}
+                              <small class="text-dark" style="background-color: #44FFBB; border-radius: 5px; padding: 5px;">available</small>
+                           {% else %}
+                              <small>unavailable</small>
+                           {% endif %}
+                        </div>
                         {% with is_in_wishlist=products|in_wishlist:request.user %}
                         <form action="{% url 'products:add_to_wishlist' products.id %}" method="POST">
                            {% csrf_token %}
