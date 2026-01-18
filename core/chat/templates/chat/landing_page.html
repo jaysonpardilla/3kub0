@@ -19,11 +19,11 @@
    <div class="messages_notification" style="position: fixed; top: 20px; right: 40%; z-index: 1050; font-family: Arial, sans-serif;">
      {% for message in messages %}
        {% if message.tags == 'error' %}
-       <div class="toast show align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+         <div class="toast show align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
        {% elif message.tags == 'success' %}
-       <div class="toast show align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+         <div class="toast show align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
        {% else %}
-       <div class="toast show align-items-center text-white bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+         <div class="toast show align-items-center text-white bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
        {% endif %}
          <div class="d-flex">
            <div class="toast-body">
@@ -85,7 +85,7 @@
                            <div>
                               <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                            </div>
-                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                               <div>
                                  <form action="{% url 'products:order_details' products.id %}" method="POST">
                                     {% csrf_token %}
@@ -101,8 +101,7 @@
                               </div>
                            {% endif %}
                         </div>
-                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                           <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                         {% endif %}
                      </div>
                   </div>
@@ -267,8 +266,7 @@
                      <div>
                         <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                      </div>
-                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                        <div>
+                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                            <form action="{% url 'products:order_details' products.id %}" method="POST">
                               {% csrf_token %}
                               <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
@@ -283,8 +281,7 @@
                         </div>
                      {% endif %}
                   </div>
-                  {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                  <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                  {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                   {% endif %}
                </div>
             </div>
@@ -381,7 +378,7 @@
                         <div>
                            <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                         </div>
-                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                            <div>
                               <form action="{% url 'products:order_details' products.id %}" method="POST">
                                  {% csrf_token %}
@@ -397,7 +394,7 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                      <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
                      {% endif %}
                   </div>
@@ -457,7 +454,7 @@
                         <div>
                            <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                         </div>
-                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                            <div>
                               <form action="{% url 'products:order_details' products.id %}" method="POST">
                                  {% csrf_token %}
@@ -473,7 +470,7 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
                      <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
                      {% endif %}
                   </div>
