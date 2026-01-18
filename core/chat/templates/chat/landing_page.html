@@ -101,8 +101,22 @@
                               </div>
                            {% endif %}
                         </div>
-                        {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        {% if request.user.is_authenticated %}
+                           {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                              <button type="submit" class="btn btn-buy text-dark" disabled>
+                                 <h6 class="text-secondary">Buy</h6>
+                              </button>
+                           {% else %}
+                              <button type="submit" class="btn btn-buy text-dark by-button">
+                                 <h6>Buy</h6>
+                              </button>
+                           {% endif %}
+                        {% else %}
+                           <button type="submit" class="btn btn-buy text-dark" disabled>
+                              <h6 class="text-secondary">Login to Buy</h6>
+                           </button>
                         {% endif %}
+
                      </div>
                   </div>
                </div>
@@ -281,8 +295,22 @@
                         </div>
                      {% endif %}
                   </div>
-                  {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                  {% if request.user.is_authenticated %}
+                     {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                        <button type="submit" class="btn btn-buy text-dark" disabled>
+                           <h6 class="text-secondary">Buy</h6>
+                        </button>
+                     {% else %}
+                        <button type="submit" class="btn btn-buy text-dark by-button">
+                           <h6>Buy</h6>
+                        </button>
+                     {% endif %}
+                  {% else %}
+                     <button type="submit" class="btn btn-buy text-dark" disabled>
+                        <h6 class="text-secondary">Login to Buy</h6>
+                     </button>
                   {% endif %}
+
                </div>
             </div>
          </div>
@@ -394,9 +422,22 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                     <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                     {% if request.user.is_authenticated %}
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <button type="submit" class="btn btn-buy text-dark" disabled>
+                              <h6 class="text-secondary">Buy</h6>
+                           </button>
+                        {% else %}
+                           <button type="submit" class="btn btn-buy text-dark by-button">
+                              <h6>Buy</h6>
+                           </button>
+                        {% endif %}
+                     {% else %}
+                        <button type="submit" class="btn btn-buy text-dark" disabled>
+                           <h6 class="text-secondary">Login to Buy</h6>
+                        </button>
                      {% endif %}
+
                   </div>
                </div>
             </div>
@@ -470,9 +511,22 @@
                            </div>
                         {% endif %}
                      </div>
-                     {% if not request.user.is_authenticated or not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
-                     <p style="color: red; font-size: 0.6em;">⚠️ Please complete your address in your <a href="{% url 'chat:profile_detail' %}">Profile</a> to buy this product.</p>
+                     {% if request.user.is_authenticated %}
+                        {% if not request.user.profile.street or not request.user.profile.municipality or not request.user.profile.postal_code %}
+                           <button type="submit" class="btn btn-buy text-dark" disabled>
+                              <h6 class="text-secondary">Buy</h6>
+                           </button>
+                        {% else %}
+                           <button type="submit" class="btn btn-buy text-dark by-button">
+                              <h6>Buy</h6>
+                           </button>
+                        {% endif %}
+                     {% else %}
+                        <button type="submit" class="btn btn-buy text-dark" disabled>
+                           <h6 class="text-secondary">Login to Buy</h6>
+                        </button>
                      {% endif %}
+
                   </div>
                </div>
             </div>
