@@ -11,6 +11,15 @@
     <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
     <link rel="stylesheet" href="{% static 'css/messages.css' %}">
     <style>
+      * {
+         box-sizing: border-box;
+      }
+      
+      html, body {
+         width: 100%;
+         overflow-x: hidden;
+      }
+
       @media (max-width: 768px) {
          .row {
             flex-direction: column;
@@ -26,6 +35,8 @@
       /* Scrollable Table */
       .table-responsive {
          overflow-x: auto;
+         max-width: 100%;
+         -webkit-overflow-scrolling: touch;
       }
 
       th, td {
@@ -33,6 +44,7 @@
          padding: 8px;
          vertical-align: middle;
          word-wrap: break-word;
+         overflow-wrap: break-word;
       }
 
       img {
@@ -43,13 +55,15 @@
       /* Order section scrollable */
       .order-section {
          max-height: 600px;
-         overflow-y: auto; /* Add vertical scrolling */
+         overflow-y: auto;
+         max-width: 100%;
       }
 
       /* Product section scrollable */
       .product-section {
-         max-height: 600px; /* Set a fixed height */
-         overflow-y: auto;  /* Make it scrollable vertically */
+         max-height: 600px;
+         overflow-y: auto;
+         max-width: 100%;
       }
 
       /* Button Adjustments */
@@ -60,7 +74,7 @@
          padding: 8px 12px;
          cursor: pointer;
          border-radius: 5px;
-         width: 100%; /* Full width for small screens */
+         width: 100%;
       }
 
       .reject-btn {
@@ -98,21 +112,35 @@
             font-size: 12px;
          }
       }
-      /* Fade-out animation for table rows: animate cell opacity and padding, then remove the row */
+      
+      /* Fade-out animation for table rows */
       .fade-out td, .fade-out th {
          transition: opacity 0.6s ease, padding 0.6s ease;
          opacity: 0 !important;
          padding-top: 0 !important;
          padding-bottom: 0 !important;
       }
+      
       .fade-out {
          transition: height 0.6s ease, margin 0.6s ease;
          height: 0 !important;
          margin: 0 !important;
       }
+
+      /* Container overflow fix */
+      .container, .container-fluid {
+         max-width: 100%;
+         padding-left: 15px;
+         padding-right: 15px;
+      }
+
+      /* Navbar overflow fix */
+      .navbar {
+         max-width: 100%;
+      }
     </style>
 </head>
-<body style="background-color: #EDEBE2">
+<body style="background-color: #EDEBE2; overflow-x: hidden;">
     {% include 'chat/navbar.html' %}
 
 
@@ -131,9 +159,9 @@
     </div>
   {% endif %}
 <!-- Dashboard summary cards -->
-<div class="row mb-1 slide-up">
-  <div class="col-12">
-    <div class="d-flex justify-content-center" style="background-color: #EDEBE2; padding: 18px; border-radius: 12px;">
+<div class="row mb-1 slide-up" style="margin-left: 0; margin-right: 0;">
+  <div class="col-12" style="padding-left: 0; padding-right: 0;">
+    <div class="d-flex justify-content-center" style="background-color: #EDEBE2; padding: 18px; border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
       <div class="d-flex flex-wrap justify-content-center align-items-center" style="gap:18px; max-width: 1100px;">
         <a href="{% url 'manage_business:view_product' %}" class="text-decoration-none text-dark">
           <div class="card text-center p-3" style="background-color: #FBF3DDBC; width: 150px;">
