@@ -105,11 +105,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         return profile.url
                 except Exception:
                     pass
-                # Fallback: generate avatar using user's name from ui-avatars.com
-                name = f"{user.first_name} {user.last_name}".strip()
-                if name:
-                    return f"https://ui-avatars.com/api/?name={name.replace(' ', '+')}&background=random"
-                return "https://ui-avatars.com/api/?name=User&background=random"
+                # Fallback: generate avatar using user's initials from ui-avatars.com
+                first_initial = user.first_name[0] if user.first_name else ""
+                last_initial = user.last_name[0] if user.last_name else ""
+                initials = f"{first_initial}{last_initial}".strip()
+                
+                if not initials:
+                    # Fall back to username or email
+                    initials = (user.username or user.email or "User")[:2]
+                
+                return f"https://ui-avatars.com/api/?name={initials}&background=random"
 
             sender_profile_url = get_profile_url(sender_user)
             receiver_profile_url = get_profile_url(receiver_user)

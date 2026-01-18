@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageForm = document.querySelector('.message-form');
     const messageTextarea = document.querySelector('textarea[name="content"]');
     
+    // Get user names from hidden inputs
+    const senderFirstName = document.getElementById('sender-first-name')?.value || 'Sender';
+    const senderLastName = document.getElementById('sender-last-name')?.value || '';
+    const receiverFirstName = document.getElementById('receiver-first-name')?.value || 'Receiver';
+    const receiverLastName = document.getElementById('receiver-last-name')?.value || '';
+    
     // Real-time sidebar search
     const searchInput = document.querySelector('input[name="search_user"]');
     if (searchInput) {
@@ -45,6 +51,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get profile images from hidden inputs (may be empty)
     const senderProfileImage = document.getElementById('sender-profile-image').value || '';
     const receiverProfileImage = document.getElementById('receiver-profile-image').value || '';
+
+    // Function to generate a fallback avatar URL with initials
+    function getFallbackAvatarUrl(firstName, lastName) {
+        const first = (firstName || '').substring(0, 1).toUpperCase();
+        const last = (lastName || '').substring(0, 1).toUpperCase();
+        const initials = (first + last).substring(0, 2) || 'U';
+        return `https://ui-avatars.com/api/?name=${initials}&background=random&size=128`;
+    }
+
+    // Ensure we have valid image URLs, fallback to initials if empty
+    function getProfileImageUrl(imageUrl, firstName, lastName) {
+        if (!imageUrl || imageUrl.trim() === '') {
+            return getFallbackAvatarUrl(firstName, lastName);
+        }
+        return imageUrl;
+    }
 
     // Function to scroll to bottom instantly (no animation)
     function scrollToBottom() {
@@ -121,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to display a message in the chat window
-    function displayMessage(messageText, senderId, isCurrentUser, timestamp) {
+    function displayMessage(messageText, senderId, isCurrentUser, timestamp, senderFirstName = 'Sender', senderLastName = '', receiverFirstName = 'Receiver', receiverLastName = '') {
         if (!chatContainer) return;
 
         const messageDiv = document.createElement('div');
@@ -150,11 +172,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const img = document.createElement('img');
-        img.src = isCurrentUser ? senderProfileImage : receiverProfileImage;
+        const imgUrl = isCurrentUser 
+            ? getProfileImageUrl(senderProfileImage, senderFirstName, senderLastName)
+            : getProfileImageUrl(receiverProfileImage, receiverFirstName, receiverLastName);
+        img.src = imgUrl;
         img.alt = 'Profile Picture';
         img.style.borderRadius = '50%';
         img.style.width = '40px';
         img.style.height = '40px';
+        
+        // Add error handler to fallback if image fails to load
+        img.onerror = function() {
+            if (isCurrentUser) {
+                this.src = getFallbackAvatarUrl(senderFirstName, senderLastName);
+            } else {
+                this.src = getFallbackAvatarUrl(receiverFirstName, receiverLastName);
+            }
+        };
 
         const span = document.createElement('span');
         span.className = isCurrentUser ? 'chat-sender' : 'chat-receiver';
@@ -238,8 +272,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const img = document.createElement('img');
         img.setAttribute('width', '50');
         img.setAttribute('height', '50');
-        img.setAttribute('src', user.profile_url || '');
+        const profileUrl = user.profile_url || getProfileImageUrl('', user.first_name, user.last_name);
+        img.setAttribute('src', profileUrl);
         img.setAttribute('alt', 'Profile Picture');
+        
+        // Add error handler to fallback if image fails to load
+        img.onerror = function() {
+            this.src = getFallbackAvatarUrl(user.first_name, user.last_name);
+        };
 
         const div = document.createElement('div');
         div.style.flex = '1';
@@ -286,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isCurrentUser = senderId === currentUserUuid;
 
         // Display the message in the chat container (uses server timestamp if present)
-        displayMessage(message, senderId, isCurrentUser, timestamp);
+        displayMessage(message, senderId, isCurrentUser, timestamp, senderFirstName, senderLastName, receiverFirstName, receiverLastName);
 
         // Scroll to bottom instantly to show the latest message
         scrollToBottom();

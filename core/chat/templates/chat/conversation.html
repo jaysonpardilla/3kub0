@@ -104,6 +104,10 @@
             <input type="hidden" id="current-user-uuid" value="{{ request.user.id }}">
             <input type="hidden" id="sender-profile-image" value="{{ request.user.profile|profile_image_url }}">
             <input type="hidden" id="receiver-profile-image" value="{{ current_user.profile|profile_image_url }}">
+            <input type="hidden" id="sender-first-name" value="{{ request.user.first_name }}">
+            <input type="hidden" id="sender-last-name" value="{{ request.user.last_name }}">
+            <input type="hidden" id="receiver-first-name" value="{{ current_user.first_name }}">
+            <input type="hidden" id="receiver-last-name" value="{{ current_user.last_name }}">
         </div>
     </div>
     </div>
