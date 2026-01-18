@@ -137,9 +137,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# WhiteNoise configuration for efficient static file serving
-# Use StaticFilesStorage instead of ManifestStaticFilesStorage to avoid manifest issues
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# WhiteNoise will serve static files via middleware
+# Use Django's default static files storage
+# WhiteNoise middleware handles serving and compression
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Cloudinary Configuration - Configure Django storage backend
 # django-cloudinary-storage reads from environment variables or CLOUDINARY_STORAGE dict
