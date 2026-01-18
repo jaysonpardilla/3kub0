@@ -137,8 +137,8 @@
             const initialDiv = document.createElement('div');
             initialDiv.className = 'profile-initial';
             initialDiv.textContent = initials;
-            initialDiv.style.width = img.getAttribute('width') + 'px' || '50px';
-            initialDiv.style.height = img.getAttribute('height') + 'px' || '50px';
+            initialDiv.style.width = '50px';
+            initialDiv.style.height = '50px';
             initialDiv.style.borderRadius = '50%';
             initialDiv.style.display = 'flex';
             initialDiv.style.alignItems = 'center';
@@ -146,9 +146,9 @@
             initialDiv.style.backgroundColor = '#d0d0d0';
             initialDiv.style.color = '#333';
             initialDiv.style.fontWeight = 'bold';
-            initialDiv.style.fontSize = img.getAttribute('width') === '50' ? '16px' : '14px';
-            initialDiv.style.minWidth = img.getAttribute('width') + 'px' || '50px';
-            initialDiv.style.minHeight = img.getAttribute('height') + 'px' || '50px';
+            initialDiv.style.fontSize = '16px';
+            initialDiv.style.minWidth = '50px';
+            initialDiv.style.minHeight = '50px';
             initialDiv.style.flexShrink = '0';
             
             img.replaceWith(initialDiv);

@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
         img.src = profileUrl;
         img.alt = 'Profile Picture';
         img.style.borderRadius = '50%';
-        img.style.width = '40px';
-        img.style.height = '40px';
+        img.style.width = '50px';
+        img.style.height = '50px';
         img.style.objectFit = 'cover';
 
         // Handle image load errors with fallback initials
@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const initialDiv = document.createElement('div');
             initialDiv.className = 'profile-initial';
             initialDiv.textContent = initials;
-            initialDiv.style.width = '40px';
-            initialDiv.style.height = '40px';
+            initialDiv.style.width = '50px';
+            initialDiv.style.height = '50px';
             initialDiv.style.borderRadius = '50%';
             initialDiv.style.display = 'flex';
             initialDiv.style.alignItems = 'center';
@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
             initialDiv.style.backgroundColor = '#e0e0e0';
             initialDiv.style.color = '#333';
             initialDiv.style.fontWeight = 'bold';
-            initialDiv.style.fontSize = '14px';
-            initialDiv.style.minWidth = '40px';
-            initialDiv.style.minHeight = '40px';
+            initialDiv.style.fontSize = '16px';
+            initialDiv.style.minWidth = '50px';
+            initialDiv.style.minHeight = '50px';
 
             img.replaceWith(initialDiv);
         };
