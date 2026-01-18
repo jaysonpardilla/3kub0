@@ -80,7 +80,7 @@
                                  </button>
                               </form>
                            </div>
-                           <a href="{% url 'products:view_product' products.id %}">
+                           <a href="{% url 'chat:login' %}">
                               <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
                            </a>
                         </div>
@@ -192,16 +192,7 @@
             <div class="category-slider" style="font-family: 'Arial', sans-serif;">
                {% for category in categories %}
                <div class="category-card" style="border: 1px solid #D5D5D5;">
-                  <a href="{% url 'products:show_products_category' category.id %}">
-                     <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%" />
-                  </a>
-                  <h6 class="text-dark mt-3">{{ category.name|title }}</h6>
-               </div>
-               {% endfor %}
-               <!-- Duplicate categories for seamless looping -->
-               {% for category in categories %}
-               <div class="category-card" style="border: 1px solid #D5D5D5;">
-                  <a href="{% url 'products:show_products_category' category.id %}">
+                  <a href="{% url 'chat:login' %}">
                      <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%" />
                   </a>
                   <h6 class="text-dark mt-3">{{ category.name|title }}</h6>
@@ -240,18 +231,19 @@
                            </button>
                         </form>
                      </div>
-                     <a href="{% url 'products:view_product' products.id %}">
+                     <a href="{% url 'chat:login' %}">
                         <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
                      </a>
                   </div>
-                  <h2 style="font-family: 'Arial', sans-serif;" class="fs-6"><a href="pages/shop-single.html" class="text-inherit text-decoration-none">{{products.product_name|title}}</a></h2>
+                  <h2 style="font-family: 'Arial', sans-serif;" class="fs-6">
+                     <a href="{% url 'chat:login' %}" class="text-inherit text-decoration-none">{{products.product_name|title}}</a>
+                  </h2>
                   <div class="d-flex justify-content-between align-items-center mt-3" style="font-family: 'Arial', sans-serif;">
                      <div>
                         <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                      </div>
                      <div>
-                        <form action="{% url 'products:order_details' products.id %}" method="POST">
-                           {% csrf_token %}
+                        <form>
                            <button type="submit" class="btn btn-buy text-dark" disabled>
                               <h6 class="text-secondary">Buy</h6>
                            </button>
@@ -334,7 +326,7 @@
                               </button>
                            </form>
                         </div>
-                        <a href="{% url 'products:view_product' products.id %}">
+                        <a href="{% url 'chat:login' %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
                         </a>
                      </div>
@@ -345,8 +337,7 @@
                            <span class="text-dark"><h6> ₱{{products.product_price}} Per {{products.product_measurement|title}} </h6></span>
                         </div>
                         <div>
-                           <form action="{% url 'products:order_details' products.id %}" method="POST">
-                              {% csrf_token %}
+                           <form action="{% url 'chat:login' %}" method="POST">
                               <button type="submit" class="btn btn-buy text-dark" disabled><h6 class="text-secondary">Buy</h6></button>
                            </form>
                         </div>
@@ -390,7 +381,7 @@
                               </button>
                            </form>
                         </div>
-                        <a href="{% url 'products:view_product' products.id %}">
+                        <a href="{% url 'chat:login' %}">
                            <img src="{{products.product_image_url}}" alt="Grocery Ecommerce Template" class="mb-3 img-fluid product-image" />
                         </a>
                      </div>
@@ -475,7 +466,7 @@
                   {% for category in categories %}
                   <div class="col">
                      <div class="category-card" style="border: 1px solid #D5D5D5; cursor: pointer;">
-                        <a href="{% url 'products:show_products_category' category.id %}">
+                        <a href="{% url 'chat:login' %}">
                            <img src="{{ category.category_image_url }}" alt="{{ category.name }}" class="mb-0" style="border-radius: 10px; outline: 1px solid #6A951FAC; object-fit: cover; width:100%; height: 120px;" />
                         </a>
                         <h6 class="text-dark mt-3 text-center">{{ category.name|title }}</h6>
