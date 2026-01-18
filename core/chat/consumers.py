@@ -104,7 +104,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     if profile:
                         profile_image = getattr(profile, 'profile', None)
                         if profile_image:
-                            return profile_image.url
+                            url = profile_image.url
+                            # Sanitize URL
+                            if url.startswith('https:/') and not url.startswith('https://'):
+                                url = url.replace('https:/', 'https://', 1)
+                            if url.startswith('https://res.cloudinary.com/'):
+                                return url
+                            if not url.startswith('http'):
+                                from django.conf import settings
+                                return f"{settings.MEDIA_URL}{url}"
+                            return url
                 except Exception:
                     pass
                 # Fallback: generate avatar using user's name from ui-avatars.com
