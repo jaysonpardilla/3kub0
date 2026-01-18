@@ -127,6 +127,48 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Handle navbar profile image errors with fallback initials
+            function handleNavbarImageError(img) {
+                const userName = img.getAttribute('data-user-name') || 'User';
+                let initials = 'U';
+                
+                // Extract initials from user name
+                const parts = userName.trim().split(' ').filter(part => part.length > 0);
+                if (parts.length > 0) {
+                    initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
+                }
+                
+                // Create a styled div to replace the image
+                const initialDiv = document.createElement('div');
+                initialDiv.className = 'navbar-profile-initial';
+                initialDiv.textContent = initials;
+                initialDiv.style.width = '40px';
+                initialDiv.style.height = '40px';
+                initialDiv.style.borderRadius = '50%';
+                initialDiv.style.display = 'flex';
+                initialDiv.style.alignItems = 'center';
+                initialDiv.style.justifyContent = 'center';
+                initialDiv.style.backgroundColor = '#d0d0d0';
+                initialDiv.style.color = '#333';
+                initialDiv.style.fontWeight = 'bold';
+                initialDiv.style.fontSize = '14px';
+                initialDiv.style.minWidth = '40px';
+                initialDiv.style.minHeight = '40px';
+                initialDiv.style.flexShrink = '0';
+                initialDiv.style.padding = '4px';
+                initialDiv.style.border = '2px solid #729FF1';
+                
+                img.replaceWith(initialDiv);
+            }
+            
+            // Set error handlers for navbar profile image
+            const navbarProfileImg = document.querySelector('.navbar-profile-img');
+            if (navbarProfileImg) {
+                navbarProfileImg.addEventListener('error', function() {
+                    handleNavbarImageError(this);
+                });
+            }
+
             const navbarToggler = document.getElementById("navbar-toggler");
             const navbarNav = document.getElementById("navbarNav");
 
@@ -140,42 +182,6 @@
                     navbarNav.classList.remove("show");
                 }
             });
-
-            // Handle navbar profile image error with fallback initials
-            const navbarProfileImg = document.querySelector('.navbar-profile-img');
-            if (navbarProfileImg) {
-                navbarProfileImg.addEventListener('error', function() {
-                    const userName = this.getAttribute('data-user-name') || 'User';
-                    let initials = 'U';
-                    
-                    // Extract initials from user name
-                    const parts = userName.trim().split(' ').filter(part => part.length > 0);
-                    if (parts.length > 0) {
-                        initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
-                    }
-                    
-                    // Create a styled div to replace the image
-                    const initialDiv = document.createElement('div');
-                    initialDiv.className = 'navbar-profile-initial';
-                    initialDiv.textContent = initials;
-                    initialDiv.style.width = '40px';
-                    initialDiv.style.height = '40px';
-                    initialDiv.style.borderRadius = '50%';
-                    initialDiv.style.display = 'flex';
-                    initialDiv.style.alignItems = 'center';
-                    initialDiv.style.justifyContent = 'center';
-                    initialDiv.style.backgroundColor = '#d0d0d0';
-                    initialDiv.style.color = '#333';
-                    initialDiv.style.fontWeight = 'bold';
-                    initialDiv.style.fontSize = '14px';
-                    initialDiv.style.minWidth = '40px';
-                    initialDiv.style.minHeight = '40px';
-                    initialDiv.style.padding = '4px';
-                    initialDiv.style.border = '2px solid #729FF1';
-                    
-                    this.replaceWith(initialDiv);
-                });
-            }
         });
 
         document.addEventListener("DOMContentLoaded", function () {
