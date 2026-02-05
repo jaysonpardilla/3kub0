@@ -14,6 +14,5 @@ virtualEnvironment
 node_modules
 .DS_Store
 *.log
-media/
 .idea
 .vscode

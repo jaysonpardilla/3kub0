@@ -13,5 +13,3 @@ node_modules
 .env.local
 *.log
 .DS_Store
-captured_images/
-media/
