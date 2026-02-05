@@ -76,7 +76,7 @@ for model_name, owner, public_id in targets:
         continue
     print(f"\nChecking {model_name} ({owner}): {public_id}")
     if resource_exists(public_id):
-        print('  Exists on Cloudinary — skipping')
+        print('  Exists on Cloudinary - skipping')
         summary.append((model_name, owner, public_id, 'exists'))
         continue
     # Try local file
@@ -85,7 +85,7 @@ for model_name, owner, public_id in targets:
         print(f'  Found local file: {local_file}')
         ok, res = upload_file(local_file, public_id)
         if ok:
-            print('  Uploaded to Cloudinary ✅')
+            print('  Uploaded to Cloudinary [OK]')
             summary.append((model_name, owner, public_id, 'uploaded'))
         else:
             print(f'  Upload failed: {res}')
