@@ -34,10 +34,6 @@ class Business(models.Model):
     def business_image_url(self):
         try:
             url = self.business_image.url
-            if url and url.startswith('https://res.cloudinary.com/'):
-                return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -51,10 +47,6 @@ class Business(models.Model):
     def business_logo_url(self):
         try:
             url = self.business_logo.url
-            if url and url.startswith('https://res.cloudinary.com/'):
-                return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -113,10 +105,6 @@ class Category(models.Model):
     def category_image_url(self):
         try:
             url = self.image.url
-            if url and url.startswith('https://res.cloudinary.com/'):
-                return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -167,17 +155,6 @@ class Product(models.Model):
     def product_image_url(self):
         try:
             url = self.product_image.url
-            # Normalize malformed stored values containing Cloudinary host
-            if 'res.cloudinary.com' in url:
-                if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/')[-1]
-                    from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -190,16 +167,6 @@ class Product(models.Model):
     def product1_image_url(self):
         try:
             url = self.product_image1.url
-            if 'res.cloudinary.com' in url:
-                if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/')[-1]
-                    from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -212,16 +179,6 @@ class Product(models.Model):
     def product2_image_url(self):
         try:
             url = self.product_image2.url
-            if 'res.cloudinary.com' in url:
-                if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/')[-1]
-                    from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -234,16 +191,6 @@ class Product(models.Model):
     def product3_image_url(self):
         try:
             url = self.product_image3.url
-            if 'res.cloudinary.com' in url:
-                if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/')[-1]
-                    from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
@@ -256,16 +203,6 @@ class Product(models.Model):
     def product4_image_url(self):
         try:
             url = self.product_image4.url
-            if 'res.cloudinary.com' in url:
-                if '/image/upload/' in url:
-                    public_id = url.split('/image/upload/')[-1]
-                    from django.conf import settings
-                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                if url.startswith('https://res.cloudinary.com/'):
-                    return url
-            if url and (url.startswith('http://') or url.startswith('https://')):
-                return url
             if url:
                 from products.utils import build_cloudinary_url
                 from django.conf import settings

@@ -62,24 +62,11 @@ class Profile(models.Model):
         try:
             if self.profile and getattr(self.profile, 'url', None):
                 url = self.profile.url
-                # Normalize malformed stored values containing Cloudinary host
-                if 'res.cloudinary.com' in url:
-                    if '/image/upload/' in url:
-                        # take the last occurrence to avoid duplicated MEDIA_URL + stored full URL
-                        public_id = url.split('/image/upload/')[-1]
-                        from django.conf import settings
-                        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
-                    if url.startswith('https://res.cloudinary.com/'):
-                        return url
-                # If it's already a full URL, return it
-                if url.startswith('http://') or url.startswith('https://'):
-                    return url
-                # If it's a relative path (from Cloudinary storage), construct full URL
                 if url:
+                    from products.utils import build_cloudinary_url
                     from django.conf import settings
                     cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                    return f"https://res.cloudinary.com/{cloud_name}/image/upload/{url}"
+                    return build_cloudinary_url(url, cloud_name=cloud_name)
         except Exception:
             pass
         # Return a placeholder avatar URL (using ui-avatars service)
