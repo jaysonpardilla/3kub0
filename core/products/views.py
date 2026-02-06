@@ -73,73 +73,72 @@ def add_new_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                product = form.save(commit=False)
+            product = form.save(commit=False)
 
-                # Process uploaded images and upload directly to Cloudinary with correct public_id
-                for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
-                    uploaded_file = request.FILES.get(field_name)
-                    if uploaded_file:
-                        try:
-                            logger.info(f"Processing {field_name}: {uploaded_file.name}")
-                            processed = remove_background_from_uploaded_file(uploaded_file)
+            # Process uploaded images and upload directly to Cloudinary with correct public_id
+            for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
+                uploaded_file = request.FILES.get(field_name)
+                if uploaded_file:
+                    try:
+                        logger.info(f"Processing {field_name}: {uploaded_file.name}")
+                        processed = remove_background_from_uploaded_file(uploaded_file)
+                        
+                        if processed is None:
+                            logger.error(f"remove_background_from_uploaded_file returned None for {field_name}")
+                            # Fallback: use the original file
+                            processed = uploaded_file
+                        else:
+                            logger.info(f"Processed file size: {processed.size if hasattr(processed, 'size') else len(processed.getvalue())}")
+                        
+                        if processed:
+                            # Generate a PNG filename
+                            base_name = uploaded_file.name.rsplit('.', 1)[0]
+                            filename = f"bg_{base_name}.png"
+                            public_id = f"product_images/{filename}"
+
+                            # Upload directly to Cloudinary with correct public_id
+                            if hasattr(processed, 'seek'):
+                                processed.seek(0)
                             
-                            if processed is None:
-                                logger.error(f"remove_background_from_uploaded_file returned None for {field_name}")
-                                # Fallback: use the original file
-                                processed = uploaded_file
+                            upload_result = uploader.upload(
+                                processed,
+                                public_id=public_id,
+                                resource_type='image',
+                                overwrite=True,
+                                use_filename=False,
+                                unique_filename=False
+                            )
+                            logger.info(f"Cloudinary upload successful for {field_name}: {public_id}")
+
+                            # Set the image field by saving the file
+                            # Use the processed file as the file content
+                            from django.core.files.base import ContentFile
+                            if hasattr(processed, 'seek'):
+                                processed.seek(0)
+                            
+                            if hasattr(processed, 'read'):
+                                file_data = processed.read()
                             else:
-                                logger.info(f"Processed file size: {processed.size if hasattr(processed, 'size') else len(processed.getvalue())}")
+                                file_data = processed.getvalue()
                             
-                            if processed:
-                                # Generate a PNG filename
-                                base_name = uploaded_file.name.rsplit('.', 1)[0]
-                                filename = f"bg_{base_name}.png"
-                                public_id = f"product_images/{filename}"
+                            file_content = ContentFile(file_data)
+                            getattr(product, field_name).save(filename, file_content, save=False)
+                            logger.info(f"Saved {field_name} to product model")
+                    except Exception as e:
+                        logger.error(f"Error processing {field_name}: {str(e)}", exc_info=True)
+                        messages.error(request, f"Error processing {field_name}: {str(e)}")
+                        # Continue with other fields even if one fails
+                        continue
 
-                                # Upload directly to Cloudinary with correct public_id
-                                if hasattr(processed, 'seek'):
-                                    processed.seek(0)
-                                
-                                upload_result = uploader.upload(
-                                    processed,
-                                    public_id=public_id,
-                                    resource_type='image',
-                                    overwrite=True,
-                                    use_filename=False,
-                                    unique_filename=False
-                                )
-                                logger.info(f"Cloudinary upload successful for {field_name}: {public_id}")
-
-                                # Set the image field by saving the file
-                                # Use the processed file as the file content
-                                from django.core.files.base import ContentFile
-                                if hasattr(processed, 'seek'):
-                                    processed.seek(0)
-                                
-                                if hasattr(processed, 'read'):
-                                    file_data = processed.read()
-                                else:
-                                    file_data = processed.getvalue()
-                                
-                                file_content = ContentFile(file_data)
-                                getattr(product, field_name).save(filename, file_content, save=False)
-                                logger.info(f"Saved {field_name} to product model")
-                        except Exception as e:
-                            logger.error(f"Error processing {field_name}: {str(e)}", exc_info=True)
-                            messages.error(request, f"Error processing {field_name}: {str(e)}")
-                            # Continue with other fields even if one fails
-                            continue
-
-                product.seller = business
-                try:
-                    product.save()
-                    logger.info(f"Product saved successfully: {product.id}")
-                    messages.success(request, "Product added successfully!")
-                    return redirect('manage_business:home')
-                except Exception as e:
-                    logger.error(f"Error saving product: {str(e)}", exc_info=True)
-                    messages.error(request, f"Error saving product: {str(e)}")
+            product.seller = business
+            try:
+                product.save()
+                logger.info(f"Product saved successfully: {product.id}")
+                messages.success(request, "Product added successfully!")
+                return redirect('manage_business:home')
+            except Exception as e:
+                logger.error(f"Error saving product: {str(e)}", exc_info=True)
+                messages.error(request, f"Error saving product: {str(e)}")
         else:
             logger.error(f"Form validation errors: {form.errors}")
     else:
