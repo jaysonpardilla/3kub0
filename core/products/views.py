@@ -59,6 +59,13 @@ def add_category(request):
 
 @login_required
 def add_new_product(request):
+    # Check if user has a business
+    try:
+        business = request.user.business
+    except Business.DoesNotExist:
+        messages.error(request, "You need to create a business first before adding products.")
+        return redirect('products:create_business')
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -90,7 +97,7 @@ def add_new_product(request):
                         cloudinary_file = MediaCloudinaryStorage()._save(public_id, processed)
                         getattr(product, field_name).name = public_id
 
-            product.seller = request.user.business
+            product.seller = business
             product.save()
             messages.success(request, "Product added successfully!")
             return redirect('manage_business:home')
