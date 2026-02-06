@@ -1,6 +1,0 @@
-Total products: 2
-
-- 774
-    product_image: https:/res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_profile_hzacvq
-- burger
-    product_image: https:/res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_hinata_pjujcx

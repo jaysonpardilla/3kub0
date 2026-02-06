@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import Product, Business, Wishlist, Notification
-from .forms import ProductForm, BusinessForm, ReviewForm, AddCategory 
+from .forms import ProductForm, BusinessForm, ReviewForm, AddCategory
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -13,6 +13,8 @@ from django.db import transaction
 from django.db.models import Q
 from .utils import remove_background_from_uploaded_file
 from .models import SellerReport
+from cloudinary import uploader
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
 @login_required(login_url='/login/')
@@ -62,7 +64,7 @@ def add_new_product(request):
         if form.is_valid():
             product = form.save(commit=False)
 
-            # Process uploaded images and remove background before saving
+            # Process uploaded images and upload directly to Cloudinary with correct public_id
             for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
                 uploaded = request.FILES.get(field_name)
                 if uploaded:
@@ -71,8 +73,22 @@ def add_new_product(request):
                         # generate a PNG filename
                         base_name = uploaded.name.rsplit('.', 1)[0]
                         filename = f"bg_{base_name}.png"
-                        # Use FieldFile.save on the unsaved model instance (save=False)
-                        getattr(product, field_name).save(filename, processed, save=False)
+                        public_id = f"product_images/{filename}"
+
+                        # Upload directly to Cloudinary with correct public_id
+                        processed.seek(0)
+                        upload_result = uploader.upload(
+                            processed,
+                            public_id=public_id,
+                            resource_type='image',
+                            overwrite=True,
+                            use_filename=False,
+                            unique_filename=False
+                        )
+
+                        # Create CloudinaryFile object and assign to field
+                        cloudinary_file = MediaCloudinaryStorage()._save(public_id, processed)
+                        getattr(product, field_name).name = public_id
 
             product.seller = request.user.business
             product.save()
