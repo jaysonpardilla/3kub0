@@ -1,4 +1,19 @@
 #!/usr/bin/env python
+"""
+Fix script for malformed Cloudinary URLs in database.
+
+IMPORTANT: This script does NOT fix malformed URLs by changing the database values.
+Why? Because Django ImageField stores the public_id, not the full URL. If the
+public_id is malformed (e.g., contains "https://res.cloudinary.com"), it means
+the file was uploaded to Cloudinary with that malformed name.
+
+The CORRECT fix is:
+1. Delete the malformed files from Cloudinary
+2. Re-upload the images from local files OR
+3. Clear the image fields if local files don't exist
+
+This script checks for malformed URLs and provides instructions.
+"""
 import os
 import sys
 import django
@@ -9,133 +24,94 @@ django.setup()
 
 from chat.models import Profile
 from products.models import Category, Product, Business
-from django.db.models import Q
 
-print("=" * 80)
-print("FIXING MALFORMED PUBLIC IDS")
-print("=" * 80)
 
-def fix_malformed_url(name):
-    """
-    Converts malformed public_id like:
-    https:/res.cloudinary.com/deyrmzn1x/image/upload/user_profiles/FILE
-    To:
-    user_profiles/FILE
-    """
+def check_malformed(name):
+    """Check if a value is a malformed Cloudinary URL."""
     if not name:
-        return name
-    
-    # If it starts with https:/res.cloudinary.com/ (MALFORMED - missing one slash)
-    if name.startswith('https:/res.cloudinary.com/'):
-        # Extract everything after /image/upload/
-        parts = name.split('/image/upload/')
-        if len(parts) > 1:
-            return parts[-1]
-    
-    # If it starts with https://res.cloudinary.com/ (also malformed if not expected)
-    if name.startswith('https://res.cloudinary.com/'):
-        parts = name.split('/image/upload/')
-        if len(parts) > 1:
-            return parts[-1]
-    
-    return name
+        return False
+    return 'https://res.cloudinary.com' in str(name)
 
-# Fix Profiles
-print("\nFixing Profiles...")
-profiles = Profile.objects.all()
-fixed_count = 0
-for profile in profiles:
-    if profile.profile.name and ('https:' in str(profile.profile.name)):
-        old_name = profile.profile.name
-        new_name = fix_malformed_url(old_name)
-        if old_name != new_name:
-            profile.profile.name = new_name
-            profile.save()
-            fixed_count += 1
-            print(f"  ✓ Fixed: {old_name[:50]}... → {new_name[:50]}...")
 
-print(f"Profiles fixed: {fixed_count}")
+def main():
+    print("=" * 80)
+    print("CHECKING FOR MALFORMED CLOUDINARY URLS IN DATABASE")
+    print("=" * 80)
 
-# Fix Categories
-print("\nFixing Categories...")
-categories = Category.objects.all()
-fixed_count = 0
-for cat in categories:
-    if cat.image.name and ('https:' in str(cat.image.name)):
-        old_name = cat.image.name
-        new_name = fix_malformed_url(old_name)
-        if old_name != new_name:
-            cat.image.name = new_name
-            cat.save()
-            fixed_count += 1
-            print(f"  ✓ Fixed: {old_name[:50]}... → {new_name[:50]}...")
+    issues_found = []
 
-print(f"Categories fixed: {fixed_count}")
+    # Check Profiles
+    print("\nChecking Profiles...")
+    for profile in Profile.objects.all():
+        if profile.profile and check_malformed(profile.profile.name):
+            issues_found.append(('Profile', profile.user.username, profile.profile.name))
+            print(f"  ISSUE: {profile.profile.name[:60]}...")
 
-# Fix Products
-print("\nFixing Products...")
-products = Product.objects.all()
-fixed_count = 0
-for product in products:
-    for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
-        field = getattr(product, field_name, None)
-        if field and field.name and ('https:' in str(field.name)):
-            old_name = field.name
-            new_name = fix_malformed_url(old_name)
-            if old_name != new_name:
-                setattr(product, field_name, new_name)
-                fixed_count += 1
-                print(f"  ✓ Fixed {product.product_name}: {old_name[:40]}... → {new_name[:40]}...")
-    if fixed_count > 0:
-        product.save()
+    # Check Categories
+    print("\nChecking Categories...")
+    for cat in Category.objects.all():
+        if cat.image and check_malformed(cat.image.name):
+            issues_found.append(('Category', cat.name, cat.image.name))
+            print(f"  ISSUE: {cat.image.name[:60]}...")
 
-print(f"Products fixed: {fixed_count}")
+    # Check Products
+    print("\nChecking Products...")
+    for product in Product.objects.all():
+        for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
+            field = getattr(product, field_name, None)
+            if field and field.name and check_malformed(field.name):
+                issues_found.append(('Product', f"{product.product_name}.{field_name}", field.name))
+                print(f"  ISSUE: {product.product_name}.{field_name}: {field.name[:60]}...")
 
-# Fix Business
-print("\nFixing Businesses...")
-businesses = Business.objects.all()
-fixed_count = 0
-for business in businesses:
-    # Fix business_image
-    if business.business_image.name and ('https:' in str(business.business_image.name)):
-        old_name = business.business_image.name
-        new_name = fix_malformed_url(old_name)
-        if old_name != new_name:
-            business.business_image.name = new_name
-            fixed_count += 1
-            print(f"  ✓ Fixed image: {old_name[:50]}... → {new_name[:50]}...")
-    
-    # Fix business_logo
-    if business.business_logo.name and ('https:' in str(business.business_logo.name)):
-        old_name = business.business_logo.name
-        new_name = fix_malformed_url(old_name)
-        if old_name != new_name:
-            business.business_logo.name = new_name
-            fixed_count += 1
-            print(f"  ✓ Fixed logo: {old_name[:50]}... → {new_name[:50]}...")
-    
-    if fixed_count > 0:
-        business.save()
+    # Check Businesses
+    print("\nChecking Businesses...")
+    for business in Business.objects.all():
+        if business.business_image and check_malformed(business.business_image.name):
+            issues_found.append(('Business', business.business_name, f"image: {business.business_image.name}"))
+            print(f"  ISSUE: {business.business_name}.image: {business.business_image.name[:60]}...")
+        if business.business_logo and check_malformed(business.business_logo.name):
+            issues_found.append(('Business', business.business_name, f"logo: {business.business_logo.name}"))
+            print(f"  ISSUE: {business.business_name}.logo: {business.business_logo.name[:60]}...")
 
-print(f"Businesses fixed: {fixed_count}")
+    print("\n" + "=" * 80)
+    print(f"FOUND {len(issues_found)} MALFORMED URLS IN DATABASE")
+    print("=" * 80)
 
-print("\n" + "=" * 80)
-print("NOW YOU MUST RE-UPLOAD IMAGES TO CLOUDINARY!")
-print("=" * 80)
-print("""
-The database has been fixed to remove malformed URLs. However, the images
-themselves were uploaded to Cloudinary with malformed public_ids.
+    if issues_found:
+        print("""
+WHAT THIS MEANS:
+The database contains public_ids that include full Cloudinary URLs.
+This is WRONG - the public_id should be just the path, like:
+    CORRECT: product_images/bg_myimage.png
+    WRONG:   https://res.cloudinary.com/.../product_images/bg_myimage.png
 
-You have two options:
+CAUSE:
+This happens when code mistakenly stores a URL instead of the file path.
+The fix is to CLEAR these fields and re-upload images properly.
 
-OPTION 1: DELETE BAD FILES AND RE-UPLOAD
-  1. Go to your Cloudinary dashboard
-  2. Delete all files with "https:/res.cloudinary.com..." as the name
-  3. Re-upload images through your Django app
-
-OPTION 2: RENAME FILES IN CLOUDINARY (requires API)
-  This would automatically move files to correct public_ids.
-
-For now, the database is ready. When you re-upload images, they'll have
-the correct public_ids: user_profiles/FILE, product_images/FILE, etc.
+DO NOT MANUALLY EDIT THESE VALUES IN THE DATABASE!
+Instead, go to your Django admin and re-upload the images.
 """)
+    else:
+        print("No malformed URLs found! Your database is clean.")
+
+    print("\n" + "=" * 80)
+    print("RECOMMENDED ACTIONS")
+    print("=" * 80)
+    print("""
+1. Delete malformed files from Cloudinary console:
+   - Look for files with names containing "https://res.cloudinary.com"
+   - These are orphan files with malformed public_ids
+
+2. Re-upload images through Django admin:
+   - Go to your app's admin interface
+   - Edit each product/profile/category
+   - Upload a new image (or clear and save to use placeholder)
+
+3. The build_cloudinary_url() function will handle existing malformed values
+   by extracting the correct public_id when building URLs for display.
+""")
+
+
+if __name__ == '__main__':
+    main()

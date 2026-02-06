@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+"""
+Database fix script for malformed Cloudinary URLs.
+
+IMPORTANT: This script identifies and fixes corrupted database entries.
+The fix works by:
+1. Identifying image fields with malformed URLs (containing "https://res.cloudinary.com")
+2. Clearing those image fields (setting to None)
+3. The images in Cloudinary should be deleted separately
+
+Why clear instead of fixing?
+Because the file in Cloudinary was uploaded with a malformed public_id.
+Even if we extract the correct path from the URL, the file in Cloudinary
+still has the malformed name. The only way to fix it is to re-upload.
+"""
 import os
 import sys
 import django
@@ -10,50 +24,64 @@ django.setup()
 from chat.models import Profile
 from products.models import Category
 
-print("=" * 80)
-print("FIXING CORRUPTED DATABASE ENTRIES")
-print("=" * 80)
 
-# Fix Profile Images with malformed URLs
-profiles_to_fix = Profile.objects.all()
-for profile in profiles_to_fix:
-    if profile.profile.name and ('https:/' in str(profile.profile.name) or 'http' in str(profile.profile.name)):
-        # This profile has a full URL stored - extract just the public_id
-        old_name = profile.profile.name
-        
-        # Extract the public_id part
-        if 'https:/res.cloudinary.com' in old_name:  # Missing one slash malformed URL
-            # Extract everything after the LAST occurrence of /image/upload/
-            if '/image/upload/' in old_name:
-                parts = old_name.rsplit('/image/upload/', 1)
-                if len(parts) == 2:
-                    correct_path = parts[1]
-                    profile.profile.name = correct_path
-                    profile.save()
-                    print(f"✓ Profile {profile.user.username}: Fixed URL storage")
-                    print(f"  From: {old_name[:60]}...")
-                    print(f"  To:   {correct_path[:60]}...")
+def is_malformed(name):
+    """Check if a value is a malformed Cloudinary URL."""
+    if not name:
+        return False
+    return 'https://res.cloudinary.com' in str(name)
 
-# Fix Category Images with malformed URLs  
-categories_to_fix = Category.objects.all()
-for cat in categories_to_fix:
-    if cat.image.name and ('https:/' in str(cat.image.name) or 'http' in str(cat.image.name)):
-        # This category has a full URL stored - extract just the public_id
-        old_name = cat.image.name
-        
-        # Extract the public_id part
-        if 'https:/res.cloudinary.com' in old_name or '/image/upload/' in old_name:
-            # Extract everything after the LAST occurrence of /image/upload/
-            if '/image/upload/' in old_name:
-                parts = old_name.rsplit('/image/upload/', 1)
-                if len(parts) == 2:
-                    correct_path = parts[1]
-                    cat.image.name = correct_path
-                    cat.save()
-                    print(f"✓ Category {cat.name}: Fixed URL storage")
-                    print(f"  From: {old_name[:60]}...")
-                    print(f"  To:   {correct_path[:60]}...")
 
-print("\n" + "=" * 80)
-print("DATABASE CLEANUP COMPLETE")
-print("=" * 80)
+def main():
+    print("=" * 80)
+    print("FIXING CORRUPTED DATABASE ENTRIES")
+    print("=" * 80)
+
+    fixed_count = 0
+
+    # Fix Profile Images with malformed URLs
+    print("\nFixing Profile Images...")
+    for profile in Profile.objects.all():
+        if profile.profile and is_malformed(profile.profile.name):
+            old_name = profile.profile.name
+            print(f"  Found malformed: {profile.user.username}")
+            print(f"    OLD: {old_name[:60]}...")
+            # Clear the image field
+            profile.profile = None
+            profile.save()
+            print(f"    NEW: (cleared - re-upload required)")
+            fixed_count += 1
+
+    # Fix Category Images with malformed URLs
+    print("\nFixing Category Images...")
+    for cat in Category.objects.all():
+        if cat.image and is_malformed(cat.image.name):
+            old_name = cat.image.name
+            print(f"  Found malformed: {cat.name}")
+            print(f"    OLD: {old_name[:60]}...")
+            # Clear the image field
+            cat.image = None
+            cat.save()
+            print(f"    NEW: (cleared - re-upload required)")
+            fixed_count += 1
+
+    print("\n" + "=" * 80)
+    print(f"FIXED {fixed_count} DATABASE ENTRIES")
+    print("=" * 80)
+    print("""
+NEXT STEPS:
+1. Delete the malformed files from Cloudinary console:
+   - Files with names containing "https://res.cloudinary.com" are orphaned
+   - They can't be accessed normally and should be deleted
+
+2. Re-upload images through Django admin:
+   - Go to your app's admin
+   - Edit each affected item
+   - Upload a new image
+
+3. Or run the upload_missing_media.py script to re-upload from local files
+""")
+
+
+if __name__ == '__main__':
+    main()
