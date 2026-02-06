@@ -57,6 +57,10 @@ def add_category(request):
     
     return render(request, "products/add-category.html", {"form": form})
 
+import logging
+# Set up logging
+logger = logging.getLogger(__name__)
+
 @login_required
 def add_new_product(request):
     # Check if user has a business
@@ -69,38 +73,56 @@ def add_new_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save(commit=False)
+            try:
+                product = form.save(commit=False)
 
-            # Process uploaded images and upload directly to Cloudinary with correct public_id
-            for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
-                uploaded = request.FILES.get(field_name)
-                if uploaded:
-                    processed = remove_background_from_uploaded_file(uploaded)
-                    if processed is not None:
-                        # generate a PNG filename
-                        base_name = uploaded.name.rsplit('.', 1)[0]
-                        filename = f"bg_{base_name}.png"
-                        public_id = f"product_images/{filename}"
+                # Process uploaded images and upload directly to Cloudinary with correct public_id
+                for field_name in ['product_image', 'product_image1', 'product_image2', 'product_image3', 'product_image4']:
+                    uploaded_file = request.FILES.get(field_name)
+                    if uploaded_file:
+                        try:
+                            processed = remove_background_from_uploaded_file(uploaded_file)
+                            if processed is not None:
+                                # Generate a PNG filename
+                                base_name = uploaded_file.name.rsplit('.', 1)[0]
+                                filename = f"bg_{base_name}.png"
+                                public_id = f"product_images/{filename}"
 
-                        # Upload directly to Cloudinary with correct public_id
-                        processed.seek(0)
-                        upload_result = uploader.upload(
-                            processed,
-                            public_id=public_id,
-                            resource_type='image',
-                            overwrite=True,
-                            use_filename=False,
-                            unique_filename=False
-                        )
+                                # Upload directly to Cloudinary with correct public_id
+                                processed.seek(0)
+                                upload_result = uploader.upload(
+                                    processed,
+                                    public_id=public_id,
+                                    resource_type='image',
+                                    overwrite=True,
+                                    use_filename=False,
+                                    unique_filename=False
+                                )
+                                logger.info(f"Cloudinary upload successful for {field_name}: {public_id}")
 
-                        # Create CloudinaryFile object and assign to field
-                        cloudinary_file = MediaCloudinaryStorage()._save(public_id, processed)
-                        getattr(product, field_name).name = public_id
+                                # Set the image field by saving the file
+                                # Use the processed file as the file content
+                                from django.core.files.base import ContentFile
+                                processed.seek(0)
+                                file_data = processed.read()
+                                file_content = ContentFile(file_data)
+                                getattr(product, field_name).save(filename, file_content, save=False)
+                        except Exception as e:
+                            logger.error(f"Error processing {field_name}: {str(e)}")
+                            messages.error(request, f"Error processing {field_name}: {str(e)}")
+                            # Continue with other fields even if one fails
+                            continue
 
-            product.seller = business
-            product.save()
-            messages.success(request, "Product added successfully!")
-            return redirect('manage_business:home')
+                product.seller = business
+                product.save()
+                logger.info(f"Product saved successfully: {product.id}")
+                messages.success(request, "Product added successfully!")
+                return redirect('manage_business:home')
+            except Exception as e:
+                logger.error(f"Error saving product: {str(e)}", exc_info=True)
+                messages.error(request, f"Error saving product: {str(e)}")
+        else:
+            logger.error(f"Form validation errors: {form.errors}")
     else:
         form = ProductForm()
     return render(request, 'products/add_product.html', {'form': form})
