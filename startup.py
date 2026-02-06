@@ -55,6 +55,19 @@ try:
 except Exception as e:
     print(f"Migration error: {e}")
 
+# Auto-fix Cloudinary URLs
+print("\n=== Auto-Fixing Cloudinary URLs ===")
+try:
+    result = subprocess.run([sys.executable, 'auto_fix_cloudinary.py'], 
+                          capture_output=True, text=True)
+    print(result.stdout)
+    if result.stderr:
+        print(f"STDERR: {result.stderr}")
+    if result.returncode != 0:
+        print(f"Auto-fix failed with return code {result.returncode}")
+except Exception as e:
+    print(f"Auto-fix error: {e}")
+
 # Collect static files
 print("\n=== Collecting Static Files ===")
 try:
