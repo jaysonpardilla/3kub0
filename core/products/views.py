@@ -109,21 +109,12 @@ def add_new_product(request):
                                 unique_filename=False
                             )
                             logger.info(f"Cloudinary upload successful for {field_name}: {public_id}")
-
-                            # Set the image field by saving the file
-                            # Use the processed file as the file content
-                            from django.core.files.base import ContentFile
-                            if hasattr(processed, 'seek'):
-                                processed.seek(0)
                             
-                            if hasattr(processed, 'read'):
-                                file_data = processed.read()
-                            else:
-                                file_data = processed.getvalue()
-                            
-                            file_content = ContentFile(file_data)
-                            getattr(product, field_name).save(filename, file_content, save=False)
-                            logger.info(f"Saved {field_name} to product model")
+                            # IMPORTANT: Save the public_id directly to the database
+                            # Don't let Django upload again - we already uploaded it above
+                            # The public_id is relative path like 'product_images/bg_veges-removebg-preview_ngj7ju.png'
+                            getattr(product, field_name).name = filename
+                            logger.info(f"Saved {field_name} to product model with public_id: {filename}")
                     except Exception as e:
                         logger.error(f"Error processing {field_name}: {str(e)}", exc_info=True)
                         messages.error(request, f"Error processing {field_name}: {str(e)}")

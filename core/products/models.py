@@ -187,9 +187,11 @@ class Product(models.Model):
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return build_cloudinary_url(url, cloud_name=cloud_name)
-        except:
-            pass
+                result = build_cloudinary_url(url, cloud_name=cloud_name)
+                print(f"DEBUG product_image_url: input='{url}', output='{result}'")
+                return result
+        except Exception as e:
+            print(f"DEBUG product_image_url ERROR: {e}, url='{url if 'url' in locals() else 'N/A'}'")
         return ''
     
     def product1_image_url(self):
