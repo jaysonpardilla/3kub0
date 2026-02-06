@@ -73,6 +73,12 @@ def build_cloudinary_url(public_id_or_url, cloud_name=None):
     
     IMPORTANT: This function is for DISPLAY only. Never store full URLs in the database.
     Store only the public_id (relative path like 'product_images/bg_x.png').
+    
+    Handles the following cases:
+    1. Already a clean full URL (returns as-is)
+    2. Duplicated URL pattern: https://res.cloudinary.com/.../https:/res.cloudinary.com/... (extracts public_id)
+    3. Malformed URL with res.cloudinary.com (extracts public_id)
+    4. Normal relative path (constructs full URL)
     """
     import re
     
@@ -87,32 +93,44 @@ def build_cloudinary_url(public_id_or_url, cloud_name=None):
             from django.conf import settings
             cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
 
+        # Case 0: Check for DUPLICATED URL pattern first (most common bug)
+        # Pattern 1: https://res.cloudinary.com/cloud_name/image/upload/v123/https:/res.cloudinary.com/cloud_name/image/upload/public_id
+        # Pattern 2: https://res.cloudinary.com/cloud_name/image/upload/v123/https://res.cloudinary.com/cloud_name/image/upload/public_id
+        # This happens when code prepends Cloudinary URL to an already-complete URL
+        duplicated_pattern_v1 = r'https://res\.cloudinary\.com/[^/]+/image/upload/v\d+/https:/res\.cloudinary\.com/[^/]+/image/upload/(.+)$'
+        duplicated_pattern_v2 = r'https://res\.cloudinary\.com/[^/]+/image/upload/v\d+/https://res\.cloudinary\.com/[^/]+/image/upload/(.+)$'
+        
+        duplicated_match = re.search(duplicated_pattern_v1, s) or re.search(duplicated_pattern_v2, s)
+        if duplicated_match:
+            # Extract the actual public_id from the duplicated URL
+            public_id = duplicated_match.group(1)
+            # Clean up the public_id
+            public_id = re.sub(r'^v\d+/', '', public_id)
+            public_id = public_id.lstrip('/')
+            # Only add .png if no extension exists
+            if public_id and '.' not in public_id:
+                public_id = f"{public_id}.png"
+            if public_id:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
         # Case 1: Already a clean full URL (starts with https://res.cloudinary.com/)
         # Return as-is, but normalize any missing slashes
         if s.startswith('https://res.cloudinary.com/'):
             # Fix missing slash in https:/ -> https://
             s = re.sub(r'https:/res\.cloudinary\.com', 'https://res.cloudinary.com', s)
+            # Also handle case where version number is followed by another URL
+            s = re.sub(r'(https://res\.cloudinary\.com/[^/]+/image/upload/)v\d+/https://', r'\1', s)
             return s
         
         # Case 2: Contains res.cloudinary.com but is malformed (possibly corrupted)
-        # Example: https:/res.cloudinary.com/... or has version numbers embedded
         if 'res.cloudinary.com' in s:
-            # Try to extract the public_id from anywhere in the string
-            # Look for patterns like 'product_images/file.png' or similar
-            
-            # Find the last segment that looks like a file path (contains / and has extension)
             parts = s.split('/')
             public_part = None
             for i in range(len(parts) - 1, -1, -1):
                 part = parts[i]
-                # Check if this part looks like a public_id (has extension and doesn't start with http)
                 if '.' in part and not part.startswith('http'):
-                    # This might be the public_id, but we need to check previous parts too
-                    # Construct the full path from this part onwards
                     candidate = '/'.join(parts[i:])
-                    # Clean up any version numbers
                     candidate = re.sub(r'^v\d+/', '', candidate)
-                    # Clean up any http fragments
                     candidate = re.sub(r'https:?/?/?res\.cloudinary\.com/?', '', candidate)
                     candidate = re.sub(r'^/?/?', '', candidate)
                     if candidate and not candidate.startswith('http'):
@@ -120,26 +138,22 @@ def build_cloudinary_url(public_id_or_url, cloud_name=None):
                         break
             
             if public_part:
-                # Extract filename and extension
+                # If already has extension, use it
                 if '.' in public_part:
                     base, ext = public_part.rsplit('.', 1)
-                    if len(ext) <= 4:  # Valid extension
+                    if len(ext) <= 4:
                         return f"https://res.cloudinary.com/{cloud_name}/image/upload/{base}.{ext}"
+                # Otherwise add png extension
                 return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_part}.png"
             
-            # Last resort: return empty to trigger fallback
             return ''
         
-        # Case 3: Normal relative path (what we should be storing in DB)
-        # Just construct the full URL
-        # Normalize: drop leading slashes
+        # Case 3: Normal relative path
         s = s.lstrip('/')
         
-        # If it already contains upload path, take the part after it
         if '/image/upload/' in s:
             s = s.split('/image/upload/')[-1]
         
-        # Clean up any version numbers at the start
         s = re.sub(r'^v\d+/', '', s)
         
         # If s has an extension, use it
@@ -148,7 +162,7 @@ def build_cloudinary_url(public_id_or_url, cloud_name=None):
             if len(ext) <= 4:
                 return f"https://res.cloudinary.com/{cloud_name}/image/upload/{base}.{ext}"
         
-        # Fallback: assume png
+        # If no extension found, assume png
         return f"https://res.cloudinary.com/{cloud_name}/image/upload/{s}.png"
         
     except Exception:
