@@ -81,15 +81,26 @@ def add_new_product(request):
                     uploaded_file = request.FILES.get(field_name)
                     if uploaded_file:
                         try:
+                            logger.info(f"Processing {field_name}: {uploaded_file.name}")
                             processed = remove_background_from_uploaded_file(uploaded_file)
-                            if processed is not None:
+                            
+                            if processed is None:
+                                logger.error(f"remove_background_from_uploaded_file returned None for {field_name}")
+                                # Fallback: use the original file
+                                processed = uploaded_file
+                            else:
+                                logger.info(f"Processed file size: {processed.size if hasattr(processed, 'size') else len(processed.getvalue())}")
+                            
+                            if processed:
                                 # Generate a PNG filename
                                 base_name = uploaded_file.name.rsplit('.', 1)[0]
                                 filename = f"bg_{base_name}.png"
                                 public_id = f"product_images/{filename}"
 
                                 # Upload directly to Cloudinary with correct public_id
-                                processed.seek(0)
+                                if hasattr(processed, 'seek'):
+                                    processed.seek(0)
+                                
                                 upload_result = uploader.upload(
                                     processed,
                                     public_id=public_id,
@@ -103,24 +114,32 @@ def add_new_product(request):
                                 # Set the image field by saving the file
                                 # Use the processed file as the file content
                                 from django.core.files.base import ContentFile
-                                processed.seek(0)
-                                file_data = processed.read()
+                                if hasattr(processed, 'seek'):
+                                    processed.seek(0)
+                                
+                                if hasattr(processed, 'read'):
+                                    file_data = processed.read()
+                                else:
+                                    file_data = processed.getvalue()
+                                
                                 file_content = ContentFile(file_data)
                                 getattr(product, field_name).save(filename, file_content, save=False)
+                                logger.info(f"Saved {field_name} to product model")
                         except Exception as e:
-                            logger.error(f"Error processing {field_name}: {str(e)}")
+                            logger.error(f"Error processing {field_name}: {str(e)}", exc_info=True)
                             messages.error(request, f"Error processing {field_name}: {str(e)}")
                             # Continue with other fields even if one fails
                             continue
 
                 product.seller = business
-                product.save()
-                logger.info(f"Product saved successfully: {product.id}")
-                messages.success(request, "Product added successfully!")
-                return redirect('manage_business:home')
-            except Exception as e:
-                logger.error(f"Error saving product: {str(e)}", exc_info=True)
-                messages.error(request, f"Error saving product: {str(e)}")
+                try:
+                    product.save()
+                    logger.info(f"Product saved successfully: {product.id}")
+                    messages.success(request, "Product added successfully!")
+                    return redirect('manage_business:home')
+                except Exception as e:
+                    logger.error(f"Error saving product: {str(e)}", exc_info=True)
+                    messages.error(request, f"Error saving product: {str(e)}")
         else:
             logger.error(f"Form validation errors: {form.errors}")
     else:
