@@ -68,7 +68,31 @@ def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
 
 
 def build_cloudinary_url(public_id_or_url, cloud_name=None):
-    """Return a full Cloudinary URL including an extension when possible.
+    """
+    Build a full Cloudinary URL from a public_id or URL.
+    
+    IMPORTANT: Why embedding Cloudinary URLs causes 404 errors
+    ========================================================
+    Cloudinary stores files by their public_id (a path like 'product_images/bg_img').
+    When you construct a URL like:
+        https://res.cloudinary.com/{cloud_name}/image/upload/product_images/bg_img
+    Cloudinary:
+    1. Sees the path after /image/upload/ as the public_id
+    2. Looks for a file named exactly: 'product_images/bg_img'
+    3. If the public_id in the database is the FULL URL string, Cloudinary can't find it
+    
+    WRONG stored value:
+        public_id = 'https://res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_img'
+    Browser requests: https://res.cloudinary.com/.../https:/.../product_images/bg_img
+    Result: 404 - Cloudinary is looking for a file with that long name
+    
+    CORRECT stored value:
+        public_id = 'product_images/bg_img'
+    Browser requests: https://res.cloudinary.com/.../product_images/bg_img
+    Result: 200 - File found!
+    
+    This function handles both cases by extracting the real public_id from malformed URLs.
+    """
 
     This helper is used across templates/model methods.
 

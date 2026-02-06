@@ -19,6 +19,14 @@ from django.db.models import Sum
 
 
 class Business(models.Model):
+    """
+    Business model storing business information and images.
+    
+    IMPORTANT: Cloudinary URL Handling
+    =================================
+    When storing image paths, NEVER store a full Cloudinary URL as the public_id.
+    See Product model for details.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=255)
@@ -95,6 +103,14 @@ class Wishlist(models.Model):
         unique_together = ('user', 'product')  # To prevent duplicate entries
 
 class Category(models.Model):
+    """
+    Product category model.
+    
+    IMPORTANT: Cloudinary URL Handling
+    =================================
+    When storing image paths, NEVER store a full Cloudinary URL as the public_id.
+    See Product model for details.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, unique=True)
     image = models.ImageField(upload_to='product_category/', blank=True, null=True, max_length=500)
@@ -116,6 +132,18 @@ class Category(models.Model):
 
 # Modify the Product Model to Add Method for Sales Reporting
 class Product(models.Model):
+    """
+    IMPORTANT: Cloudinary URL Handling
+    =================================
+    When storing image paths, NEVER store a full Cloudinary URL as the public_id.
+    Doing so causes 404 errors because Cloudinary treats the URL string as the filename.
+    
+    WRONG: https://res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_image.png
+    RIGHT: product_images/bg_image.png
+    
+    The model properties like product_image_url() use build_cloudinary_url() to
+    construct the full URL from the stored public_id for display.
+    """
     MEASUREMENT_CHOICES = [
         ('Kilo', 'Per Kilo'),
         ('Gram', 'Per Gram'),

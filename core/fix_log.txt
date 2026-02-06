@@ -1,0 +1,5 @@
+Found malformed URL in 774.product_image: https:/res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_profile_hzacvq
+  Cleared product_image
+Found malformed URL in burger.product_image: https:/res.cloudinary.com/deyrmzn1x/image/upload/product_images/bg_hinata_pjujcx
+  Cleared product_image
+Total fixed: 2

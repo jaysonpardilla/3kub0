@@ -40,6 +40,20 @@ class Message(models.Model):
         return f"{self.content}"
 
 class Profile(models.Model):
+    """
+    User profile model storing profile image and address information.
+    
+    IMPORTANT: Cloudinary URL Handling
+    =================================
+    When storing image paths, NEVER store a full Cloudinary URL as the public_id.
+    Doing so causes 404 errors because Cloudinary treats the URL string as the filename.
+    
+    WRONG: https://res.cloudinary.com/deyrmzn1x/image/upload/user_profiles/avatar.png
+    RIGHT: user_profiles/avatar.png
+    
+    The profile_image_url() method uses build_cloudinary_url() to construct
+    the full URL from the stored public_id for display.
+    """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     profile = models.ImageField(upload_to='user_profiles', blank=True, null=True, max_length=500)  # Remove default to avoid 404 errors
     province = models.CharField(max_length=100, null=True, blank=True)
