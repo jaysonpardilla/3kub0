@@ -23,7 +23,7 @@ def remove_background_from_uploaded_file(uploaded_file, output_format='PNG'):
             buffer = io.BytesIO()
             result.save(buffer, format=output_format)
             buffer.seek(0)
-            return ContentFile(buffer.getvalue())
+            return buffer
         except Exception:
             # fall through to OpenCV fallback
             pass

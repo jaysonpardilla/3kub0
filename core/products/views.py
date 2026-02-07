@@ -71,7 +71,7 @@ def add_new_product(request):
         return redirect('products:create_business')
 
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
+        form = ProductForm(request.POST)
         if form.is_valid():
             product = form.save(commit=False)
 
@@ -110,10 +110,8 @@ def add_new_product(request):
                             )
                             logger.info(f"Cloudinary upload successful for {field_name}: {public_id}")
                             
-                            # IMPORTANT: Save the public_id directly to the database
-                            # Don't let Django upload again - we already uploaded it above
-                            # The public_id is relative path like 'product_images/bg_veges-removebg-preview_ngj7ju.png'
-                            getattr(product, field_name).name = public_id
+                            # Set the field to the public_id string, which Django treats as committed
+                            setattr(product, field_name, public_id)
                             logger.info(f"Saved {field_name} to product model with public_id: {public_id}")
                     except Exception as e:
                         logger.error(f"Error processing {field_name}: {str(e)}", exc_info=True)
