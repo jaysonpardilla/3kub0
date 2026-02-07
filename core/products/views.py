@@ -91,9 +91,9 @@ def add_new_product(request):
                             logger.info(f"Processed file size: {processed.size if hasattr(processed, 'size') else len(processed.getvalue())}")
                         
                         if processed:
-                            # Generate a PNG filename
+                            # Generate filename without extension (Cloudinary adds it)
                             base_name = uploaded_file.name.rsplit('.', 1)[0]
-                            filename = f"bg_{base_name}.png"
+                            filename = f"bg_{base_name}"
                             public_id = f"product_images/{filename}"
 
                             # Upload directly to Cloudinary with correct public_id

@@ -50,6 +50,9 @@ def fix_cloudinary_urls():
         if match:
             public_id = match.group(1)
             public_id = re.sub(r'^v\d+/', '', public_id)
+            # Remove .png if it exists at the end (to avoid double extension)
+            if public_id.endswith('.png'):
+                public_id = public_id[:-4]
             return public_id
             
         return None
