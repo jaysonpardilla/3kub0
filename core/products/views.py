@@ -49,13 +49,62 @@ def add_category(request):
     if request.method == "POST":
         form = AddCategory(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.info(request, 'new category added')
-            return redirect(reverse('manage_business:home'))  
+            category = form.save(commit=False)
+
+            # Process uploaded image and upload directly to Cloudinary with correct public_id
+            uploaded_file = request.FILES.get('image')
+            if uploaded_file:
+                try:
+                    logger.info(f"Processing category image: {uploaded_file.name}")
+                    processed = remove_background_from_uploaded_file(uploaded_file)
+
+                    if processed is None:
+                        logger.error("remove_background_from_uploaded_file returned None for category image")
+                        processed = uploaded_file
+                    else:
+                        logger.info(f"Processed category image size: {processed.size if hasattr(processed, 'size') else len(processed.getvalue())}")
+
+                    if processed:
+                        # Generate filename without extension (Cloudinary adds it)
+                        base_name = uploaded_file.name.rsplit('.', 1)[0]
+                        filename = f"bg_{base_name}"
+                        public_id = f"product_category/{filename}"
+
+                        # Upload directly to Cloudinary with correct public_id
+                        if hasattr(processed, 'seek'):
+                            processed.seek(0)
+
+                        upload_result = uploader.upload(
+                            processed,
+                            public_id=public_id,
+                            resource_type='image',
+                            overwrite=True,
+                            use_filename=False,
+                            unique_filename=False
+                        )
+                        logger.info(f"Cloudinary upload successful for category image: {public_id}")
+
+                        # Set the field to the public_id string
+                        category.image = public_id
+                        logger.info(f"Saved category image to model with public_id: {public_id}")
+                except Exception as e:
+                    logger.error(f"Error processing category image: {str(e)}", exc_info=True)
+                    messages.error(request, f"Error processing category image: {str(e)}")
+                    # Continue to save category even if image fails
+
+            try:
+                category.save()
+                logger.info(f"Category saved successfully: {category.id}")
+                messages.success(request, "Category added successfully!")
+                return redirect('manage_business:home')  # Assuming redirect to business home, adjust if needed
+            except Exception as e:
+                logger.error(f"Error saving category: {str(e)}", exc_info=True)
+                messages.error(request, f"Error saving category: {str(e)}")
+        else:
+            logger.error(f"Form validation errors: {form.errors}")
     else:
         form = AddCategory()
-    
-    return render(request, "products/add-category.html", {"form": form})
+    return render(request, 'products/add_category.html', {'form': form})  # Assuming template name, adjust if needed
 
 import logging
 # Set up logging
