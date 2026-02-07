@@ -16,6 +16,10 @@ from .models import SellerReport
 from cloudinary import uploader
 from cloudinary_storage.storage import MediaCloudinaryStorage
 
+import logging
+# Set up logging
+logger = logging.getLogger(__name__)
+
 
 @login_required(login_url='/login/')
 def add_to_wishlist(request, product_id):
@@ -104,11 +108,7 @@ def add_category(request):
             logger.error(f"Form validation errors: {form.errors}")
     else:
         form = AddCategory()
-    return render(request, 'products/add_category.html', {'form': form})  # Assuming template name, adjust if needed
-
-import logging
-# Set up logging
-logger = logging.getLogger(__name__)
+    return render(request, 'products/add-category.html', {'form': form})
 
 @login_required
 def add_new_product(request):
