@@ -83,8 +83,7 @@ class Profile(models.Model):
                     return build_cloudinary_url(url, cloud_name=cloud_name)
         except Exception:
             pass
-        # Do not return a placeholder avatar here — return empty string so
-        # templates receive the actual stored value or blank (helps debugging).
+        # No fallback: return empty string when no image available
         return ''
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

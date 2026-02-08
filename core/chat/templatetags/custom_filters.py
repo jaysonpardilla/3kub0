@@ -47,10 +47,6 @@ def profile_image_url(profile_obj):
     except:
         pass
     
-    # Fallback: return empty string so templates receive the actual stored URL
-    # (no ui-avatar replacement) — this helps debugging which URL is passed.
-    try:
-        return ''
-    except Exception:
-        return ''
+    # No fallback: return empty string when no image available
+    return ""
 
