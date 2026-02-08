@@ -93,24 +93,27 @@ def build_cloudinary_url(public_id_or_url, cloud_name=None):
             from django.conf import settings
             cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
 
-        # Case 0: Check for DUPLICATED URL pattern first (most common bug)
-        # Pattern 1: https://res.cloudinary.com/cloud_name/image/upload/v123/https:/res.cloudinary.com/cloud_name/image/upload/public_id
-        # Pattern 2: https://res.cloudinary.com/cloud_name/image/upload/v123/https://res.cloudinary.com/cloud_name/image/upload/public_id
-        # This happens when code prepends Cloudinary URL to an already-complete URL
-        duplicated_pattern_v1 = r'https://res\.cloudinary\.com/[^/]+/image/upload/v\d+/https:/res\.cloudinary\.com/[^/]+/image/upload/(.+)$'
-        duplicated_pattern_v2 = r'https://res\.cloudinary\.com/[^/]+/image/upload/v\d+/https://res\.cloudinary\.com/[^/]+/image/upload/(.+)$'
-        
-        duplicated_match = re.search(duplicated_pattern_v1, s) or re.search(duplicated_pattern_v2, s)
-        if duplicated_match:
-            # Extract the actual public_id from the duplicated URL
-            public_id = duplicated_match.group(1)
-            # Clean up the public_id
-            public_id = re.sub(r'^v\d+/', '', public_id)
+        # Case 0: Handle duplicated or nested Cloudinary URLs robustly.
+        # Sometimes the stored value contains multiple '/image/upload/' segments
+        # e.g. '.../image/upload/v123/https:/res.cloudinary.com/.../image/upload/user_profiles/xxx.jpg'
+        # Strategy: always take the text after the last '/image/upload/' and treat
+        # that as the public_id (remove version prefix if present).
+        if 'res.cloudinary.com' in s and '/image/upload/' in s:
+            # take the substring after the last /image/upload/
+            public_id = s.split('/image/upload/')[-1]
+            # If the extracted part still contains another cloudinary URL, keep taking last segment
+            while 'res.cloudinary.com' in public_id and '/image/upload/' in public_id:
+                public_id = public_id.split('/image/upload/')[-1]
+
             public_id = public_id.lstrip('/')
-            # Only add .png if no extension exists
-            if public_id and '.' not in public_id:
-                public_id = f"{public_id}.png"
+            public_id = re.sub(r'^v\d+/', '', public_id)
+            # If it's a full URL fragment like 'https:/res.cloudinary.com/...', strip any schema/host
+            public_id = re.sub(r'https?:/*res\.cloudinary\.com[^/]*/image/upload/*', '', public_id)
+            public_id = public_id.lstrip('/')
             if public_id:
+                # If no extension, assume png
+                if '.' not in public_id:
+                    public_id = f"{public_id}.png"
                 return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
         # Case 1: Already a clean full URL (starts with https://res.cloudinary.com/)
