@@ -83,8 +83,9 @@ class Profile(models.Model):
                     return build_cloudinary_url(url, cloud_name=cloud_name)
         except Exception:
             pass
-        # Return a placeholder avatar URL (using ui-avatars service)
-        return f"https://ui-avatars.com/api/?name={self.user.username}&background=random&size=128"
+        # Do not return a placeholder avatar here — return empty string so
+        # templates receive the actual stored value or blank (helps debugging).
+        return ''
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_profile(sender, instance, created, **kwargs):
