@@ -29,48 +29,31 @@ def fix_profile_images():
             return None
 
         s = str(url_string).strip()
+        # Normalize variants like 'https:/res.cloudinary.com' -> 'https://res.cloudinary.com'
+        s = s.replace('https:/res.cloudinary.com/', 'https://res.cloudinary.com/')
 
-        # Handle duplicated URL pattern with version: .../image/upload/v<number>/https://res.cloudinary.com/.../image/upload/<public_id>
-        duplicated_pattern = r'https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/v\d+/https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
+        # If the string contains a Cloudinary URL (possibly duplicated/nested),
+        # take the substring after the last '/image/upload/' and strip any
+        # version prefix or leftover schema/host fragments.
+        if 'res.cloudinary.com' in s and '/image/upload/' in s:
+            public_id = s.split('/image/upload/')[-1]
+            # If the extracted part still contains another cloudinary URL, keep taking last segment
+            while 'res.cloudinary.com' in public_id and '/image/upload/' in public_id:
+                public_id = public_id.split('/image/upload/')[-1]
 
-        match = re.search(duplicated_pattern, s)
-        if match:
-            public_id = match.group(1)
+            public_id = public_id.lstrip('/')
+            # Remove any leading version like 'v12345/'
             public_id = re.sub(r'^v\d+/', '', public_id)
-            return public_id
+            # Strip any leftover schema/host prefix (e.g. 'https:/res.cloudinary.com/.../image/upload/')
+            public_id = re.sub(r'https?:/*res\.cloudinary\.com[^/]*/image/upload/*', '', public_id)
+            public_id = public_id.lstrip('/')
+            return public_id if public_id else None
 
-        # Handle case with missing slash and version: https://.../v<number>/https:/res.cloudinary.com/...
-        duplicated_pattern_v2 = r'https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/v\d+/https:/res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
-        match = re.search(duplicated_pattern_v2, s)
-        if match:
-            public_id = match.group(1)
-            public_id = re.sub(r'^v\d+/', '', public_id)
-            return public_id
-
-        # Handle the specific pattern: v<number>/https:/res.cloudinary.com/.../image/upload/<public_id>
-        specific_pattern = r'v\d+/https:/res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
-        match = re.search(specific_pattern, s)
-        if match:
-            public_id = match.group(1)
-            return public_id
-
-        # Handle malformed URL with missing slash: https:/res.cloudinary.com/...
-        if s.startswith('https:/res.cloudinary.com/'):
-            # Fix the missing slash first
-            s = s.replace('https:/res.cloudinary.com/', 'https://res.cloudinary.com/')
-            # Then extract the path
-            path = s.replace('https://res.cloudinary.com/' + cloud_name + '/image/upload/', '')
-            # Remove version prefix if present
-            path = re.sub(r'^v\d+/', '', path)
-            return path
-
-        # Handle normal full Cloudinary URL - extract the public_id
+        # If it's a full (but not nested) Cloudinary URL, extract path after /image/upload/
         if s.startswith('https://res.cloudinary.com/'):
-            # Remove the base URL and extract the path after /image/upload/
             path = s.replace('https://res.cloudinary.com/' + cloud_name + '/image/upload/', '')
-            # Remove version prefix if present
             path = re.sub(r'^v\d+/', '', path)
-            return path
+            return path.lstrip('/') if path else None
 
         # If it's already a relative path (no http), return as-is
         if not s.startswith('http'):

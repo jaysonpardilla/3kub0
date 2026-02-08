@@ -104,19 +104,20 @@ class Profile(models.Model):
                     # Normalize missing slash variant
                     s_fixed = s.replace('https:/res.cloudinary.com/', 'https://res.cloudinary.com/')
 
-                    # If contains '/image/upload/', take last segment after it
-                    if '/image/upload/' in s_fixed:
+                    if 'res.cloudinary.com' in s_fixed and '/image/upload/' in s_fixed:
                         public_part = s_fixed.split('/image/upload/')[-1]
-                        # If still contains 'res.cloudinary.com', strip up to the last image/upload
+                        # If the extracted part still contains another cloudinary URL, keep taking last segment
                         while 'res.cloudinary.com' in public_part and '/image/upload/' in public_part:
                             public_part = public_part.split('/image/upload/')[-1]
-                        # Remove leading version if present
-                        public_part = re.sub(r'^v\d+/', '', public_part)
-                        # Strip off any leading slashes
+
                         public_part = public_part.lstrip('/')
-                        # If no extension, keep as-is; saving the public_id (db will store this)
+                        # Remove any leading version like 'v12345/'
+                        public_part = re.sub(r'^v\d+/', '', public_part)
+                        # Strip any leftover schema/host prefix
+                        public_part = re.sub(r'https?:/*res\.cloudinary\.com[^/]*/image/upload/*', '', public_part)
+                        public_part = public_part.lstrip('/')
                         if public_part:
-                            # Assign the public_id back to the ImageField (Django will accept string path)
+                            # Assign the cleaned public_id back to the ImageField (Django will accept string path)
                             self.profile = public_part
         except Exception:
             pass
