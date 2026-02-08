@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-lg px-5 shadow-sm" style="background-color: #FFF8E7; position: sticky; top: 0; z-index: 1030;">
         <div class="container-fluid">
             <!-- Logo -->
-            {% if request.user.business %}
+            {% if request.user.is_seller == 'yes' %}
                 <a class="navbar-brand d-flex align-items-center" href="{% url 'manage_business:home' %}">
                     <img src="../../../static/icons/logo1.png" alt="Refreshify Logo" width="50" height="50">
                     <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
@@ -25,7 +25,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav ms-auto align-items-center pl-3">
-                        {% if request.user.business %}
+                        {% if request.user.is_seller == 'yes' %}
                             <li class="nav-item d-flex align-items-center me-3" style="font-family: 'Arial', sans-serif;">
                             <div class="d-flex align-items-center" style="gap:22px;"> 
                                 <div class="text-center">
