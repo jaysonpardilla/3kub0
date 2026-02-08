@@ -47,6 +47,13 @@ def fix_profile_images():
             public_id = re.sub(r'^v\d+/', '', public_id)
             return public_id
 
+        # Handle the specific pattern: v<number>/https:/res.cloudinary.com/.../image/upload/<public_id>
+        specific_pattern = r'v\d+/https:/res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
+        match = re.search(specific_pattern, s)
+        if match:
+            public_id = match.group(1)
+            return public_id
+
         # Handle malformed URL with missing slash: https:/res.cloudinary.com/...
         if s.startswith('https:/res.cloudinary.com/'):
             # Fix the missing slash first
