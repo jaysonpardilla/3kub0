@@ -100,7 +100,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Helper function to get profile URL or generate a fallback avatar
             def get_profile_url(user):
                 """
-                Returns the full Cloudinary URL for a user's profile image with fallback to ui-avatars.com
+                Returns the full Cloudinary URL for a user's profile image.
+                Does not provide a client-side fallback; returns empty string if no image.
                 Mirrors the logic from custom_filters.py profile_image_url filter.
                 """
                 try:
@@ -131,11 +132,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 except Exception:
                     pass
                 
-                # Fallback: generate avatar using user's name from ui-avatars.com
-                name = f"{user.first_name} {user.last_name}".strip()
-                if not name:
-                    name = user.username or user.email or "User"
-                return f"https://ui-avatars.com/api/?name={name.replace(' ', '+')}&background=random"
+                # No fallback: return empty string if no profile image
+                return ""
 
             sender_profile_url = get_profile_url(sender_user)
             receiver_profile_url = get_profile_url(receiver_user)

@@ -151,50 +151,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const img = document.createElement('img');
         const profileUrl = isCurrentUser ? senderProfileImage : receiverProfileImage;
-        img.src = profileUrl;
+        if (profileUrl) {
+            img.src = profileUrl;
+        }
         img.alt = 'Profile Picture';
         img.style.borderRadius = '50%';
         img.style.width = '40px';
         img.style.height = '40px';
         img.style.objectFit = 'cover';
 
-        // Handle image load errors with fallback initials
-        img.onerror = function() {
-            // Generate initials from the profile URL if it's a ui-avatars URL
-            let initials = 'U';
-            
-            if (profileUrl && profileUrl.includes('ui-avatars.com')) {
-                // Extract name parameter from ui-avatars URL
-                const nameMatch = profileUrl.match(/name=([^&]+)/);
-                if (nameMatch) {
-                    const name = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
-                    const parts = name.split(' ').filter(part => part.length > 0);
-                    if (parts.length > 0) {
-                        initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
-                    }
-                }
-            }
-
-            // Replace img with a styled div showing initials
-            const initialDiv = document.createElement('div');
-            initialDiv.className = 'profile-initial';
-            initialDiv.textContent = initials;
-            initialDiv.style.width = '40px';
-            initialDiv.style.height = '40px';
-            initialDiv.style.borderRadius = '50%';
-            initialDiv.style.display = 'flex';
-            initialDiv.style.alignItems = 'center';
-            initialDiv.style.justifyContent = 'center';
-            initialDiv.style.backgroundColor = '#e0e0e0';
-            initialDiv.style.color = '#333';
-            initialDiv.style.fontWeight = 'bold';
-            initialDiv.style.fontSize = '14px';
-            initialDiv.style.minWidth = '40px';
-            initialDiv.style.minHeight = '40px';
-            initialDiv.style.padding = '4px';
-
-            img.replaceWith(initialDiv);
-        };
+        // No client-side fallback: do not replace missing images with initials.
 
         const span = document.createElement('span');
         span.className = isCurrentUser ? 'chat-sender' : 'chat-receiver';
@@ -278,49 +244,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const img = document.createElement('img');
         img.setAttribute('width', '50');
         img.setAttribute('height', '50');
-        img.setAttribute('src', user.profile_url || '');
+        if (user.profile_url) {
+            img.setAttribute('src', user.profile_url);
+        }
         img.setAttribute('alt', 'Profile Picture');
         img.style.borderRadius = '50%';
         img.style.objectFit = 'cover';
 
-        // Handle image load errors with fallback initials
-        img.onerror = function() {
-            const profileUrl = user.profile_url || '';
-            let initials = 'U';
-            
-            if (profileUrl && profileUrl.includes('ui-avatars.com')) {
-                // Extract name parameter from ui-avatars URL
-                const nameMatch = profileUrl.match(/name=([^&]+)/);
-                if (nameMatch) {
-                    const name = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
-                    const parts = name.split(' ').filter(part => part.length > 0);
-                    if (parts.length > 0) {
-                        initials = parts.map(part => part[0].toUpperCase()).join('').slice(0, 2);
-                    }
-                }
-            }
-
-            // Replace img with a styled div showing initials
-            const initialDiv = document.createElement('div');
-            initialDiv.className = 'sidebar-profile-initial';
-            initialDiv.textContent = initials;
-            initialDiv.style.width = '40px';
-            initialDiv.style.height = '40px';
-            initialDiv.style.borderRadius = '50%';
-            initialDiv.style.display = 'flex';
-            initialDiv.style.alignItems = 'center';
-            initialDiv.style.justifyContent = 'center';
-            initialDiv.style.backgroundColor = '#d0d0d0';
-            initialDiv.style.color = '#333';
-            initialDiv.style.fontWeight = 'bold';
-            initialDiv.style.fontSize = '14px';
-            initialDiv.style.minWidth = '40px';
-            initialDiv.style.minHeight = '40px';
-            initialDiv.style.flexShrink = '0';
-            initialDiv.style.padding = '4px';
-
-            img.replaceWith(initialDiv);
-        };
+        // No client-side fallback for sidebar images.
 
         const div = document.createElement('div');
         div.style.flex = '1';

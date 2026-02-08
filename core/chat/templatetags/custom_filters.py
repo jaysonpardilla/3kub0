@@ -19,7 +19,8 @@ def in_wishlist(product, user):
 @register.filter
 def profile_image_url(profile_obj):
     """
-    Returns the full Cloudinary URL for a profile image with fallback to ui-avatars.com
+    Returns the full Cloudinary URL for a profile image.
+    Does not provide a ui-avatars fallback; returns empty string when no image.
     Handles both relative paths (from ImageField.url) and full URLs (from model method).
     """
     try:

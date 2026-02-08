@@ -86,6 +86,43 @@ class Profile(models.Model):
         # No fallback: return empty string when no image available
         return ''
 
+    def save(self, *args, **kwargs):
+        """Ensure the profile ImageField stores only the Cloudinary public_id (relative path).
+
+        This prevents storing full or duplicated Cloudinary URLs in the DB which
+        later cause malformed display URLs.
+        """
+        try:
+            if self.profile:
+                s = str(self.profile).strip()
+                # If the stored value looks like a full Cloudinary URL, extract the public_id
+                if s.startswith('http') or 'res.cloudinary.com' in s:
+                    import re
+                    from django.conf import settings
+                    cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+
+                    # Normalize missing slash variant
+                    s_fixed = s.replace('https:/res.cloudinary.com/', 'https://res.cloudinary.com/')
+
+                    # If contains '/image/upload/', take last segment after it
+                    if '/image/upload/' in s_fixed:
+                        public_part = s_fixed.split('/image/upload/')[-1]
+                        # If still contains 'res.cloudinary.com', strip up to the last image/upload
+                        while 'res.cloudinary.com' in public_part and '/image/upload/' in public_part:
+                            public_part = public_part.split('/image/upload/')[-1]
+                        # Remove leading version if present
+                        public_part = re.sub(r'^v\d+/', '', public_part)
+                        # Strip off any leading slashes
+                        public_part = public_part.lstrip('/')
+                        # If no extension, keep as-is; saving the public_id (db will store this)
+                        if public_part:
+                            # Assign the public_id back to the ImageField (Django will accept string path)
+                            self.profile = public_part
+        except Exception:
+            pass
+
+        return super().save(*args, **kwargs)
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -93,6 +130,9 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    # Avoid automatically saving the FileField on every User post_save —
+    # this was causing unintended uploads/transformations in some setups.
+    # Leave profile saving to explicit form handling or admin actions.
+    return
 
 
