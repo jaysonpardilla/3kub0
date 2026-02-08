@@ -30,7 +30,7 @@ def fix_profile_images():
 
         s = str(url_string).strip()
 
-        # Handle duplicated URL pattern: .../image/upload/v<number>/https://res.cloudinary.com/.../image/upload/<public_id>
+        # Handle duplicated URL pattern with version: .../image/upload/v<number>/https://res.cloudinary.com/.../image/upload/<public_id>
         duplicated_pattern = r'https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/v\d+/https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
 
         match = re.search(duplicated_pattern, s)
@@ -39,7 +39,7 @@ def fix_profile_images():
             public_id = re.sub(r'^v\d+/', '', public_id)
             return public_id
 
-        # Handle case with missing slash: https:/res.cloudinary.com/...
+        # Handle case with missing slash and version: https://.../v<number>/https:/res.cloudinary.com/...
         duplicated_pattern_v2 = r'https://res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/v\d+/https:/res\.cloudinary\.com/' + re.escape(cloud_name) + r'/image/upload/(.+)$'
         match = re.search(duplicated_pattern_v2, s)
         if match:
