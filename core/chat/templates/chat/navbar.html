@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-lg px-5 shadow-sm" style="background-color: #FFF8E7; position: sticky; top: 0; z-index: 1030;">
         <div class="container-fluid">
             <!-- Logo -->
-            {% if request.user.is_seller == 'yes' %}
+            {% if request.user.business %}
                 <a class="navbar-brand d-flex align-items-center" href="{% url 'manage_business:home' %}">
                     <img src="../../../static/icons/logo1.png" alt="Refreshify Logo" width="50" height="50">
                     <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
@@ -25,7 +25,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav ms-auto align-items-center pl-3">
-                        {% if request.user.is_seller == 'yes' %}
+                        {% if request.user.business %}
                             <li class="nav-item d-flex align-items-center me-3" style="font-family: 'Arial', sans-serif;">
                             <div class="d-flex align-items-center" style="gap:22px;"> 
                                 <div class="text-center">
@@ -44,7 +44,7 @@
                         </li>
                         {% else %}
                             <form method="GET" action="{% url 'chat:home' %}" class="d-flex ms-3" style="margin-right: 20px;">
-                                <input class="form-control" type="search" name="q" placeholder="Search for products..." aria-label="Search"
+                                <input class="form-control" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search for products..." aria-label="Search"
                                     style="height: 44px; width: 450px; background-color: #F0F0F081; border: 1px solid #A4A584; border-radius: 8px; font-family: Arial, sans-serif;">
                                 <button class="btn btn-outline-success" type="submit" style="height: 44px; font-family: Arial, sans-serif;"><i class="fas fa-search"></i></button>
                             </form>
@@ -100,6 +100,11 @@
                                             data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #729FF1;"
                                             class="navbar-profile-img">
+                                    {% else %}
+                                        <div title="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                             style="width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#E8EEF9;color:#1F3A93;font-weight:700;border:2px solid #729FF1;font-family:Arial, sans-serif;">
+                                            {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                                        </div>
                                     {% endif %}
                                 {% endwith %}
                             </a>
@@ -108,7 +113,7 @@
                 {% else %}
                 <div class="d-flex w-100 justify-content-center align-items-center" style="font-family: 'Arial', sans-serif;"> 
                     <form method="GET" action="{% url 'chat:landing_page' %}" class="d-flex ms-3">
-                        <input id="landing-search" class="form-control searchh" type="search" name="q" placeholder="Search for products..." aria-label="Search">
+                        <input id="landing-search" class="form-control searchh" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search for products..." aria-label="Search">
                         <button class="btn btn-success" type="submit" style="height: 40px;"><i class="fas fa-search"></i></button>
                     </form>
                     <div class="ms-auto ">
