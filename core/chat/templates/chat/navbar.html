@@ -151,14 +151,18 @@
             const sidebar = document.getElementById("sidebar");
             const overlay = document.getElementById("overlay");
             const menuToggle = document.getElementById("menu-toggle");
-            menuToggle.addEventListener("click", function () {
-                sidebar.classList.add("active");
-                overlay.classList.add("active");
-            });
-            overlay.addEventListener("click", function () {
-                sidebar.classList.remove("active");
-                overlay.classList.remove("active");
-            });
+
+            if (menuToggle && sidebar && overlay) {
+                menuToggle.addEventListener("click", function () {
+                    sidebar.classList.add("active");
+                    overlay.classList.add("active");
+                });
+
+                overlay.addEventListener("click", function () {
+                    sidebar.classList.remove("active");
+                    overlay.classList.remove("active");
+                });
+            }
         });
 
 
