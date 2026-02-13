@@ -1,148 +1,377 @@
-{% extends 'chat/base.html' %}
-{% load static %}
-
-{% block title %}
+{% load static custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- Required meta tags -->
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+   <meta content="Codescandy" name="author" />
    <title>E-Kubo: Create Shop</title>
-{% endblock title %}
+   <link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/slideup.css' %}">
-<link rel="icon" type="image/png" href="{% static 'icons/ekubo_icon.png' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+   <!-- Bootstrap CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+   
+   <!-- Theme CSS -->
+   <link rel="stylesheet" href="{% static 'css/theme.min.css' %}" />
+   <link rel="stylesheet" href="{% static 'css/slideup.css' %}">
 
-<style>
-  body {
-    background-color: #EDEBE2;
-    font-family: 'Arial', sans-serif;
-    color: #222;
-  }
+   <style>
+      body {
+         background-color: #EDEBE2;
+         font-family: 'Arial', sans-serif;
+         color: #222;
+      }
 
-  .business-card {
-    max-width: 500px;
-    margin: 2rem auto;
-    background: #F3EBD098;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-radius: 10px;
-  }
+      .business-card {
+         max-width: 500px;
+         margin: 2rem auto;
+         background: #F3EBD098;
+         border: none;
+         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+         border-radius: 10px;
+      }
 
-  .business-card h5 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #222;
-  }
+      .business-card h5 {
+         font-size: 1.25rem;
+         font-weight: 700;
+         color: #222;
+      }
 
-  .business-card form {
-    padding: 0;
-  }
+      .business-card form {
+         padding: 0;
+      }
 
-  /* Form field styling */
-  .business-card input, 
-  .business-card textarea, 
-  .business-card select {
-    font-size: 0.95rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 0.6rem;
-    font-family: 'Arial', sans-serif;
-    width: 100%;
-    box-sizing: border-box;
-    display: block;
-    margin-bottom: 0.75rem;
-  }
+      /* Form field styling */
+      .business-card input, 
+      .business-card textarea, 
+      .business-card select {
+         font-size: 0.95rem;
+         border: 1px solid #ddd;
+         border-radius: 6px;
+         padding: 0.6rem;
+         font-family: 'Arial', sans-serif;
+         width: 100%;
+         box-sizing: border-box;
+         display: block;
+         margin-bottom: 0.75rem;
+      }
 
-  .business-card input:focus, 
-  .business-card textarea:focus, 
-  .business-card select:focus {
-    outline: none;
-    border-color: #3EB489;
-    box-shadow: 0 0 5px rgba(62, 180, 137, 0.2);
-  }
+      .business-card input:focus, 
+      .business-card textarea:focus, 
+      .business-card select:focus {
+         outline: none;
+         border-color: #3EB489;
+         box-shadow: 0 0 5px rgba(62, 180, 137, 0.2);
+      }
 
-  /* File upload styling */
-  .business-card input[type="file"] {
-    padding: 0.5rem;
-    cursor: pointer;
-  }
+      /* File upload styling */
+      .business-card input[type="file"] {
+         padding: 0.5rem;
+         cursor: pointer;
+      }
 
-  .business-card input[type="file"]::file-selector-button {
-    background-color: #3EB489;
-    color: #000;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
+      .business-card input[type="file"]::file-selector-button {
+         background-color: #3EB489;
+         color: #000;
+         border: none;
+         padding: 0.5rem 1rem;
+         border-radius: 4px;
+         font-weight: 600;
+         cursor: pointer;
+         transition: background 0.3s ease;
+      }
 
-  .business-card input[type="file"]::file-selector-button:hover {
-    background-color: #44FFBB;
-  }
+      .business-card input[type="file"]::file-selector-button:hover {
+         background-color: #44FFBB;
+      }
 
-  .business-card label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #333;
-    margin-top: 0.75rem;
-    margin-bottom: 0.4rem;
-  }
+      .business-card label {
+         font-size: 0.95rem;
+         font-weight: 600;
+         color: #333;
+         margin-top: 0.75rem;
+         margin-bottom: 0.4rem;
+      }
 
-  /* Button styling */
-  .btn-submit {
-    background-color: #3EB489;
-    color: #000;
-    border: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.65rem 1.5rem;
-    border-radius: 6px;
-    width: 100%;
-    transition: background 0.3s ease;
-  }
+      /* Button styling */
+      .btn-submit {
+         background-color: #3EB489;
+         color: #000;
+         border: none;
+         font-size: 0.95rem;
+         font-weight: 600;
+         padding: 0.65rem 1.5rem;
+         border-radius: 6px;
+         width: 100%;
+         transition: background 0.3s ease;
+      }
 
-  .btn-submit:hover {
-    background-color: #44FFBB;
-    color: #000;
-  }
+      .btn-submit:hover {
+         background-color: #44FFBB;
+         color: #000;
+      }
 
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #333;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    transition: color 0.3s ease;
-  }
+      .back-button {
+         display: inline-flex;
+         align-items: center;
+         gap: 0.5rem;
+         color: #333;
+         text-decoration: none;
+         font-size: 0.95rem;
+         font-weight: 500;
+         margin-bottom: 1rem;
+         transition: color 0.3s ease;
+      }
 
-  .back-button:hover {
-    color: #3EB489;
-  }
+      .back-button:hover {
+         color: #3EB489;
+      }
 
-  @media (max-width: 768px) {
-    .business-card {
-      margin: 1rem;
-    }
-  }
-</style>
+      @media (max-width: 768px) {
+         .business-card {
+            margin: 1rem;
+         }
+      }
+   </style>
+</head>
+<body style="background-color: #EDEBE2">
 
-<div class="slide-up">
-  <div class="card business-card">
-    <div class="card-body p-4">
-      <h5 class="text-center mb-4">Create Your Shop</h5>
-      <form method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form}}
-        <button class="btn btn-submit mt-3" type="submit">Create Shop</button>
-      </form>
-    </div>
-  </div>
-</div>
+   <!-- Navbar -->
+   <nav class="navbar navbar-expand-lg px-5 shadow-sm" style="background-color: #FFF8E7; position: sticky; top: 0; z-index: 1030;">
+      <div class="container-fluid">
+         <!-- Logo -->
+         {% if request.user.business %}
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'manage_business:home' %}">
+               <img src="{% static 'icons/logo1.png' %}" alt="E-Kubo Logo" width="50" height="50">
+               <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
+            </a>
+         {% else %}
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'chat:home' %}">
+               <img src="{% static 'icons/logo1.png' %}" alt="E-Kubo Logo" width="50" height="50">
+               <h3 class="ms-2 mb-0 fw-bold text-dark" style="font-family: 'Itim', cursive;">E-Kubo</h3>
+            </a>
+         {% endif %}
 
-<script src="{% static 'js/slideup.js' %}"></script>
-{% endblock %}
+         <!-- Toggle Button for Mobile -->
+         <button class="navbar-toggler" type="button" id="navbar-toggler">
+            <span class="navbar-toggler-icon"></span>
+         </button>
 
+         <!-- Navbar Items -->
+         <div class="collapse navbar-collapse" id="navbarNav">
+            {% if user.is_authenticated %}
+               <ul class="navbar-nav ms-auto align-items-center pl-3">
+                  {% if request.user.business %}
+                     <li class="nav-item d-flex align-items-center me-3" style="font-family: 'Arial', sans-serif;">
+                        <div class="d-flex align-items-center" style="gap:22px;"> 
+                           <div class="text-center">
+                              <a href="{% url 'products:add_new_products' %}" class="nav-link p-0 nav-tile">
+                                 <i class="bi bi-plus-square fs-4 nav-icon"></i>
+                                 <div class="small nav-label">New Product</div>
+                              </a>
+                           </div>
+                           <div class="text-center">
+                              <a href="{% url 'products:add_category' %}" class="nav-link p-0 nav-tile">
+                                 <i class="bi bi-tags fs-4 nav-icon"></i>
+                                 <div class="small nav-label">New Category</div>
+                              </a>
+                           </div>
+                        </div>
+                     </li>
+                  {% else %}
+                     <form method="GET" action="{% url 'chat:home' %}" class="d-flex ms-3" style="margin-right: 20px;">
+                        <input class="form-control" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search for products..." aria-label="Search"
+                           style="height: 44px; width: 450px; background-color: #F0F0F081; border: 1px solid #A4A584; border-radius: 8px; font-family: Arial, sans-serif;">
+                        <button class="btn btn-outline-success" type="submit" style="height: 44px; font-family: Arial, sans-serif;"><i class="bi bi-search"></i></button>
+                     </form>
 
+                     <li class="nav-item d-flex align-items-center me-3" style="font-family: 'Arial', sans-serif;">
+                        <div class="d-flex align-items-center" style="gap:22px;"> 
+                           <div class="text-center">
+                              <a class="nav-link p-0 nav-tile" href="{% url 'chat:home' %}">
+                                 <i class="bi bi-house fs-4 nav-icon"></i>
+                                 <div class="small nav-label">Home</div>
+                              </a>
+                           </div>
+                           <div class="text-center">
+                              <a class="nav-link p-0 nav-tile" href="{% url 'shops:shops_list' %}">
+                                 <i class="bi bi-shop fs-4 nav-icon"></i>
+                                 <div class="small nav-label">Shop</div>
+                              </a>
+                           </div>
+                           <div class="text-center">
+                              <a class="nav-link p-0 nav-tile" href="{% url 'products:submit_report' %}">
+                                 <i class="bi bi-question-circle fs-4 nav-icon"></i>
+                                 <div class="small nav-label">Help</div>
+                              </a>
+                           </div>
+                        </div>
+                     </li>
+                  {% endif %}
+
+                  <!-- Notification --> 
+                  <li class="nav-item text-center me-3" style="margin-left: 40px;">
+                     <a class="nav-link position-relative" href="{% url 'chat:buyer_notification' %}" id="notification-link">
+                        <img src="{% static 'icons/not.png' %}" width="28" height="28" alt="Notifications" class="nav-icon">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-count">0</span>
+                        <div class="small nav-label">Notifs</div>
+                     </a>
+                  </li>
+
+                  <!-- Messages -->
+                  <li class="nav-item text-center me-3">
+                     <a class="nav-link position-relative" href="{% url 'chat:chat_dashboard' %}" id="message-link">
+                        <i class="bi bi-chat-dots fs-4 nav-icon"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="message-count">0</span>
+                        <div class="small nav-label">Chats</div>
+                     </a>
+                  </li>
+
+                  <!-- Profile -->
+                  <li class="nav-item">
+                     <a class="nav-link" href="{% url 'chat:profile_detail' %}">
+                        {% with url=request.user.profile|profile_image_url %}
+                           {% if url %}
+                              <img src="{{ url }}" alt="Profile"
+                                 data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #729FF1;"
+                                 class="navbar-profile-img">
+                           {% else %}
+                              <div title="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                 style="width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#E8EEF9;color:#1F3A93;font-weight:700;border:2px solid #729FF1;font-family:Arial, sans-serif;">
+                                 {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                              </div>
+                           {% endif %}
+                        {% endwith %}
+                     </a>
+                  </li>
+               </ul>
+            {% else %}
+               <div class="d-flex w-100 justify-content-center align-items-center" style="font-family: 'Arial', sans-serif;"> 
+                  <form method="GET" action="{% url 'chat:landing_page' %}" class="d-flex ms-3">
+                     <input id="landing-search" class="form-control searchh" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search for products..." aria-label="Search">
+                     <button class="btn btn-success" type="submit" style="height: 40px;"><i class="bi bi-search"></i></button>
+                  </form>
+                  <div class="ms-auto ">
+                     <a href="{% url 'chat:login' %}">
+                        <button style="border-radius: 20px; padding: 5px; padding-left: 10px; padding-right: 10px;" type="submit">Sign in</button>
+                     </a>
+                  </div>
+               </div>
+            {% endif %}
+         </div>
+      </div>
+   </nav>
+
+   <!-- Main Content -->
+   <div class="slide-up">
+      <div class="card business-card">
+         <div class="card-body p-4">
+            <h5 class="text-center mb-4">Create Your Shop</h5>
+            <form method="POST" action="" enctype="multipart/form-data">
+               {% csrf_token %}
+               {{form}}
+               <button class="btn btn-submit mt-3" type="submit">Create Shop</button>
+            </form>
+         </div>
+      </div>
+   </div>
+
+   <!-- Bootstrap JS -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="{% static 'js/slideup.js' %}"></script>
+
+   <script>
+      document.addEventListener("DOMContentLoaded", function () {
+         const navbarToggler = document.getElementById("navbar-toggler");
+         const navbarNav = document.getElementById("navbarNav");
+
+         navbarToggler.addEventListener("click", function () {
+            navbarNav.classList.toggle("show");
+         });
+
+         // Close navbar when clicking outside
+         document.addEventListener("click", function (event) {
+            if (!navbarNav.contains(event.target) && !navbarToggler.contains(event.target)) {
+               navbarNav.classList.remove("show");
+            }
+         });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+         const notificationCountElement = document.getElementById("notification-count");
+         const notificationLink = document.getElementById("notification-link");
+
+         function fetchNotifications() {
+            fetch("{% url 'chat:get_notifications' %}") 
+               .then(response => response.json())
+               .then(data => {
+                  if (data.count > 0) {
+                     notificationCountElement.textContent = data.count;
+                  } else {
+                     notificationCountElement.textContent = "";
+                  }
+               });
+         }
+
+         notificationLink.addEventListener("click", function () {
+            fetch("{% url 'chat:mark_notifications_read' %}", {
+               method: "POST",
+               headers: {
+                  "X-CSRFToken": getCSRFToken(),
+                  "X-Requested-With": "XMLHttpRequest",
+               },
+            }).then(() => {
+               notificationCountElement.textContent = "";
+            });
+         });
+
+         function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+         }
+
+         fetchNotifications();
+         setInterval(fetchNotifications, 10000);
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+         const messageCountElement = document.getElementById("message-count");
+         const messageLink = document.getElementById("message-link");
+
+         function fetchUnreadMessages() {
+            fetch("{% url 'chat:get_unread_messages' %}")
+               .then(response => response.json())
+               .then(data => {
+                  if (data.count > 0) {
+                     messageCountElement.textContent = data.count;
+                  } else {
+                     messageCountElement.textContent = "";
+                  }
+               });
+         }
+
+         messageLink.addEventListener("click", function () {
+            fetch("{% url 'chat:mark_messages_read' %}", {
+               method: "POST",
+               headers: {
+                  "X-CSRFToken": getCSRFToken(),
+                  "X-Requested-With": "XMLHttpRequest",
+               },
+            }).then(() => {
+               messageCountElement.textContent = "";
+            });
+         });
+
+         function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+         }
+
+         fetchUnreadMessages();
+         setInterval(fetchUnreadMessages, 10000);
+      });
+   </script>
+</body>
+</html>
