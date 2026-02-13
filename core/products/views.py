@@ -193,6 +193,37 @@ def createBusiness(request):
         if form.is_valid():
             business = form.save(commit=False)  
             business.user = request.user
+            
+            # Handle business_image upload - ensure only public_id is stored
+            if 'business_image' in request.FILES:
+                image_file = request.FILES['business_image']
+                try:
+                    # Upload to Cloudinary and get only the public_id
+                    result = uploader.upload(
+                        image_file,
+                        folder='business_image',
+                        resource_type='image'
+                    )
+                    # Store only the public_id (relative path), not the full URL
+                    business.business_image = result.get('public_id', '')
+                except Exception as e:
+                    logger.error(f"Error uploading business_image: {e}")
+            
+            # Handle business_logo upload - ensure only public_id is stored
+            if 'business_logo' in request.FILES:
+                logo_file = request.FILES['business_logo']
+                try:
+                    # Upload to Cloudinary and get only the public_id
+                    result = uploader.upload(
+                        logo_file,
+                        folder='business_logo',
+                        resource_type='image'
+                    )
+                    # Store only the public_id (relative path), not the full URL
+                    business.business_logo = result.get('public_id', '')
+                except Exception as e:
+                    logger.error(f"Error uploading business_logo: {e}")
+            
             business.save()
             print('valid form')
             messages.success(request, 'new store successfully created')

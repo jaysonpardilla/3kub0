@@ -24,8 +24,9 @@ class Business(models.Model):
     
     IMPORTANT: Cloudinary URL Handling
     =================================
-    When storing image paths, NEVER store a full Cloudinary URL as the public_id.
-    See Product model for details.
+    This model stores only the public_id (relative path) for images.
+    The business_image_url and business_logo_url properties construct
+    the full Cloudinary URL on-demand using build_cloudinary_url.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -40,27 +41,73 @@ class Business(models.Model):
 
     @property
     def business_image_url(self):
+        """
+        Generate the full Cloudinary URL for the business image.
+        Handles both public_id and legacy full URL formats.
+        """
         try:
-            url = self.business_image.url
-            if url:
+            # Get the stored value (should be public_id, but might be full URL)
+            stored_value = self.business_image.name if self.business_image else None
+            if not stored_value:
+                return ''
+            
+            # If it's already a full URL, extract the public_id
+            if stored_value.startswith('http'):
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return build_cloudinary_url(url, cloud_name=cloud_name)
-        except:
+                return build_cloudinary_url(stored_value, cloud_name=cloud_name)
+            
+            # Otherwise, construct URL from public_id
+            from django.conf import settings
+            cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+            # Clean the public_id - remove any leading slashes or version prefixes
+            public_id = stored_value.lstrip('/')
+            import re
+            public_id = re.sub(r'^v\d+/', '', public_id)
+            
+            # Determine extension
+            if '.' in public_id:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+            else:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.png"
+        except Exception:
             pass
         return ''
 
     @property
     def business_logo_url(self):
+        """
+        Generate the full Cloudinary URL for the business logo.
+        Handles both public_id and legacy full URL formats.
+        """
         try:
-            url = self.business_logo.url
-            if url:
+            # Get the stored value (should be public_id, but might be full URL)
+            stored_value = self.business_logo.name if self.business_logo else None
+            if not stored_value:
+                return ''
+            
+            # If it's already a full URL, extract the public_id
+            if stored_value.startswith('http'):
                 from products.utils import build_cloudinary_url
                 from django.conf import settings
                 cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
-                return build_cloudinary_url(url, cloud_name=cloud_name)
-        except:
+                return build_cloudinary_url(stored_value, cloud_name=cloud_name)
+            
+            # Otherwise, construct URL from public_id
+            from django.conf import settings
+            cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME', 'deyrmzn1x')
+            # Clean the public_id - remove any leading slashes or version prefixes
+            public_id = stored_value.lstrip('/')
+            import re
+            public_id = re.sub(r'^v\d+/', '', public_id)
+            
+            # Determine extension
+            if '.' in public_id:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+            else:
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.png"
+        except Exception:
             pass
         return ''
 

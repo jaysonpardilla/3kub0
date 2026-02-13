@@ -6,7 +6,11 @@ from products.models import Product
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from products.models import Category
+from cloudinary import uploader
+import logging
+
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 @login_required(login_url='/login/')
 def shops_list(request):
@@ -22,7 +26,39 @@ def update_shop(request, pk):
     if request.method == 'POST':
         form = UpdateBusinessForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
-            form.save()
+            business = form.save(commit=False)
+            
+            # Handle business_image upload - ensure only public_id is stored
+            if 'business_image' in request.FILES:
+                image_file = request.FILES['business_image']
+                try:
+                    # Upload to Cloudinary and get only the public_id
+                    result = uploader.upload(
+                        image_file,
+                        folder='business_image',
+                        resource_type='image'
+                    )
+                    # Store only the public_id (relative path), not the full URL
+                    business.business_image = result.get('public_id', '')
+                except Exception as e:
+                    logger.error(f"Error uploading business_image: {e}")
+            
+            # Handle business_logo upload - ensure only public_id is stored
+            if 'business_logo' in request.FILES:
+                logo_file = request.FILES['business_logo']
+                try:
+                    # Upload to Cloudinary and get only the public_id
+                    result = uploader.upload(
+                        logo_file,
+                        folder='business_logo',
+                        resource_type='image'
+                    )
+                    # Store only the public_id (relative path), not the full URL
+                    business.business_logo = result.get('public_id', '')
+                except Exception as e:
+                    logger.error(f"Error uploading business_logo: {e}")
+            
+            business.save()
             return redirect(reverse('chat:profile_detail'))
     else:
         form = UpdateBusinessForm(instance=instance)
